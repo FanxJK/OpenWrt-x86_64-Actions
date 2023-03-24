@@ -18,7 +18,7 @@ git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/lea
 mkdir package/luci-app-openclash
 
 # WolPlus
-mv files/luci-app-wolplus/ lede/package/lean/
+mv files/luci-app-wolplus/ package/lean/
 
 # OpenClash
 cd package/luci-app-openclash
