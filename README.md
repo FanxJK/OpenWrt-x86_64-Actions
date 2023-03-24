@@ -1,6 +1,6 @@
 # OpenWrt-x86_64-Actions
 
-基于 Lean 的 LEDE 源码的自用项目，每周自动编译和构建。
+基于 Lean 源码的自用项目，每周自动编译和构建。
 
 软件包:
 - `luci-app-wolplus`
