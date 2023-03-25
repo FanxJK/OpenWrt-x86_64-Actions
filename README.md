@@ -19,12 +19,12 @@
 您可以在项目的 [Release 页面](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases) 下载最新版本的固件
 
 以下是对每个文件的说明：
-- `config.buildinfo`: 用于构建 OpenWrt 固件的配置信息，包括选定的软件包、编译选项等
-- `feeds.buildinfo`: 构建固件时使用的 OpenWrt feeds 的版本和信息
-- `openwrt-x86-64-generic-kernel.bin`: OpenWrt 固件的内核镜像文件
-- `openwrt-x86-64-generic-squashfs-combined-efi.img.gz`: 用于在 UEFI 系统上安装 OpenWrt
-- `openwrt-x86-64-generic-squashfs-rootfs.img.gz`: rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
-- `openwrt-x86-64-generic.manifest`: 构建 OpenWrt 固件时使用的软件包和版本信息
+- `config.buildinfo` 用于构建 OpenWrt 固件的配置信息，包括选定的软件包、编译选项等
+- `feeds.buildinfo` 构建固件时使用的 OpenWrt feeds 的版本和信息
+- `openwrt-x86-64-generic-kernel.bin` OpenWrt 固件的内核镜像文件
+- `openwrt-x86-64-generic-squashfs-combined-efi.img.gz` 用于在 UEFI 系统上安装 OpenWrt
+- `openwrt-x86-64-generic-squashfs-rootfs.img.gz` rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
+- `openwrt-x86-64-generic.manifest` 构建 OpenWrt 固件时使用的软件包和版本信息
 
 
 ## 更新时间
