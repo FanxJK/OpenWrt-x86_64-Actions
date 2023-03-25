@@ -6,7 +6,7 @@
 - `luci-app-wolplus`
 - `luci-app-openclash`
 - `luci-app-uugamebooster`
-- `luci-app-turboacc` (使用 Linux 原生的 Flow Offloading 避免 Shortcut FE 导致的全锥型 NAT 失效)
+- `luci-app-turboacc` (使用 Linux 原生的 Flow Offloading, 没有使用 Shortcut FE, 避免全锥型 NAT 失效)
 - `luci-theme-argon`
 - `open-vm-tools-fuse`
 - `msd_lite`
@@ -15,11 +15,20 @@
 
 ## 下载
 
-您可以在项目的 [Release 页面](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases) 下载最新版本的固件进行刷写。
+您可以在项目的 [Release 页面](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases) 下载最新版本的固件
+
+以下是对每个文件的说明：
+- `config.buildinfo`: 用于构建 OpenWrt 固件的配置信息，包括选定的软件包、编译选项等
+- `feeds.buildinfo`: 构建固件时使用的 OpenWrt feeds 的版本和信息
+- `openwrt-x86-64-generic-kernel.bin`: OpenWrt 固件的内核镜像文件
+- `openwrt-x86-64-generic-squashfs-combined-efi.img.gz`: 用于在 UEFI 系统上安装 OpenWrt
+- `openwrt-x86-64-generic-squashfs-rootfs.img.gz`: rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
+- `openwrt-x86-64-generic.manifest`: 构建 OpenWrt 固件时使用的软件包和版本信息
+
 
 ## 更新时间
 
-会在每周的北京时间周五 01:00 自动编译并更新。
+会在每周的北京时间周五 01:00 自动编译并更新
 
 ## 免责声明
 
