@@ -1,6 +1,7 @@
 # OpenWrt-x86_64-Actions
 
-基于 Lean 源码的自用项目，每周自动编译和构建。
+基于 Lean 源码的自用项目，每周自动编译和构建。  
+基于 [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt) 修改，去除了已弃用或即将弃用的库和环境，解决 Actions WARNING 问题  
 感谢 [P3TERX](https://github.com/P3TERX) 与 [coolsnowwolf](https://github.com/coolsnowwolf)
 
 软件包:
