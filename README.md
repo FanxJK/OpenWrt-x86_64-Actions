@@ -17,7 +17,7 @@
 
 ## 下载
 
-您可以在项目的 [Release 页面](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases) 下载最新版本的固件
+您可以在项目的 [Releases 页面](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases) 下载最新版本的固件
 
 以下是对每个文件的说明：
 - `config.buildinfo` 用于构建 OpenWrt 固件的配置信息，包括选定的软件包、编译选项等
@@ -30,7 +30,8 @@
 
 ## 更新时间
 
-每周的 UTC 时间周五 01:00 自动编译并更新，Release 的 Tags 为北京时间
+每周的 UTC 时间周五 01:00 自动编译并更新并上传到 [Releases](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases)  
+[Tags](https://github.com/FanxJK/OpenWrt-x86_64-Actions/tags) 为北京时间
 
 ## 免责声明
 
