@@ -15,12 +15,15 @@ sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_gener
 
 # Argon Theme
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon-18.06
-mkdir package/luci-app-openclash
+
+# AdguardHome
+git clone https://github.com/kongfl888/luci-app-adguardhome.git package/lean/luci-app-adguardhome
 
 # WolPlus
 mv files/luci-app-wolplus/ package/lean/
 
 # OpenClash
+mkdir package/luci-app-openclash
 cd package/luci-app-openclash
 git init
 git remote add -f origin https://github.com/vernesong/OpenClash.git
