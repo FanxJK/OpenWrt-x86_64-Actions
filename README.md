@@ -6,6 +6,7 @@
 
 软件包:
 - `luci-app-adguardhome`
+- `luci-app-mosdns`
 - `luci-app-wolplus`
 - `luci-app-openclash`
 - `luci-app-uugamebooster`
