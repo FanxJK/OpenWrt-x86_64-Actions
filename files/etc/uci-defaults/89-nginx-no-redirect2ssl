@@ -11,6 +11,7 @@ del_list nginx._lan.listen='[::]:443 ssl default_server'
 
 add_list nginx._lan.listen='80'
 add_list nginx._lan.listen='[::]:80'
+set nginx._lan.server_name='OpenWrt'
 
 commit
 EOF
