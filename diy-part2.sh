@@ -16,9 +16,6 @@ sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_gener
 # Argon Theme
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon-18.06
 
-# AdguardHome
-git clone https://github.com/kongfl888/luci-app-adguardhome.git package/lean/luci-app-adguardhome
-
 # WolPlus
 mv files/luci-app-wolplus/ package/lean/
 

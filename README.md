@@ -5,7 +5,6 @@
 感谢 [P3TERX](https://github.com/P3TERX) 与 [coolsnowwolf](https://github.com/coolsnowwolf)
 
 软件包:
-- `luci-app-adguardhome`
 - `luci-app-mosdns`
 - `luci-app-wolplus`
 - `luci-app-openclash`
