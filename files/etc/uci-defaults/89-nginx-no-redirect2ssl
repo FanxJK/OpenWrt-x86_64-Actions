@@ -1,0 +1,16 @@
+[ "$(uci -q get nginx._redirect2ssl)" ] && uci -q batch <<EOF
+
+delete nginx._redirect2ssl
+delete nginx._lan.uci_manage_ssl
+delete nginx._lan.ssl_certificate
+delete nginx._lan.ssl_certificate_key
+delete nginx._lan.ssl_session_cache
+delete nginx._lan.ssl_session_timeout
+del_list nginx._lan.listen='443 ssl default_server'
+del_list nginx._lan.listen='[::]:443 ssl default_server'
+
+add_list nginx._lan.listen='80'
+add_list nginx._lan.listen='[::]:80'
+
+commit
+EOF
