@@ -1,4 +1,6 @@
-[ "$(uci -q get nginx._redirect2ssl)" ] && uci -q batch <<EOF
+#!/bin/sh
+
+[ "$(uci -q get nginx._redirect2ssl)" ] && uci -q batch <<-EOF >/dev/null
 	delete nginx._redirect2ssl
 	delete nginx._lan.uci_manage_ssl
 	delete nginx._lan.ssl_certificate
