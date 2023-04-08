@@ -17,7 +17,7 @@ sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_gener
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon-18.06
 
 # WolPlus
-mv add-packages/luci-app-wolplus package/lean/
+mv files/luci-app-wolplus package/lean/
 
 # OpenClash
 mkdir package/luci-app-openclash
