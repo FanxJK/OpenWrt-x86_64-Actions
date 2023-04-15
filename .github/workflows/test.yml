@@ -19,5 +19,4 @@ jobs:
       with:
         retain_days: 1
         keep_minimum_runs: 1
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+        token: ${{ secrets.GITHUB_TOKEN }}
