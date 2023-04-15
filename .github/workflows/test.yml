@@ -8,15 +8,13 @@ env:
   TZ: Asia/Shanghai
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
-    permissions:
-      contents: write
-
+  del_runs:
+    runs-on: ubuntu-latest
     steps:
-    - name: Remove workflow runs
-      uses: Mattraks/delete-workflow-runs@v2
-      with:
-        retain_days: 1
-        keep_minimum_runs: 1
-        token: ${{ github.token }}
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 1
+          keep_minimum_runs: 3
