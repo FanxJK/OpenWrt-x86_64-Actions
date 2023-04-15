@@ -1,0 +1,23 @@
+name: test
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+
+    steps:
+    - name: Remove workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        retain_days: 1
+        keep_minimum_runs: 1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
