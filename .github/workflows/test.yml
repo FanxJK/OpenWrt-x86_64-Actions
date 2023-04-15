@@ -9,6 +9,9 @@ env:
 
 jobs:
   del_runs:
+    permissions:
+      contents: write
+      actions: write
     runs-on: ubuntu-latest
     steps:
       - name: Delete workflow runs
