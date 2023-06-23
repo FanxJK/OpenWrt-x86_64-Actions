@@ -1,16 +1,22 @@
 # OpenWrt-x86_64-Actions
 
-基于 Lean 源码的自用项目，每周自动编译和构建。  
+基于 ImmortalWrt 源码的自用项目，每周自动编译和构建。  
 基于 [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt) 修改，去除了已弃用或即将弃用的库和环境，解决 Actions WARNING 问题  
-感谢 [P3TERX](https://github.com/P3TERX) 与 [coolsnowwolf](https://github.com/coolsnowwolf)
+感谢 [P3TERX](https://github.com/P3TERX) 与 [ImmortalWrt](https://github.com/immortalwrt)
 
+# Changelog
+## 2023-06-24
+切换到 ImmortalWrt 21.02 源码，之前版本请全新安装
+
+# 说明
 软件包:
 - `luci-app-mosdns`
 - `luci-app-wolplus`
 - `luci-app-openclash`
 - `luci-app-uugamebooster`
 - `luci-app-turboacc` (使用 Linux 原生的 Flow Offloading, 没有使用 Shortcut FE, 避免全锥型 NAT 失效)
-- `luci-theme-argon`
+- `luci-app-iptvhelper`
+- `luci-app-msd_lite`
 - `open-vm-tools-fuse`
 - `qemu-ga`
 - `nginx`
@@ -25,10 +31,12 @@
 以下是对每个文件的说明：
 - `config.buildinfo` 用于构建 OpenWrt 固件的配置信息，包括选定的软件包、编译选项等
 - `feeds.buildinfo` 构建固件时使用的 OpenWrt feeds 的版本和信息
-- `openwrt-x86-64-generic-kernel.bin` OpenWrt 固件的内核镜像文件
-- `openwrt-x86-64-generic-squashfs-combined-efi.img.gz` 用于在 UEFI 系统上安装 OpenWrt
-- `openwrt-x86-64-generic-squashfs-rootfs.img.gz` rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
-- `openwrt-x86-64-generic.manifest` 构建 OpenWrt 固件时使用的软件包和版本信息
+- `immortalwrt-[xxx]-x86-64-generic-kernel.bin` OpenWrt 固件的内核镜像文件
+- `immortalwrt-[xxx]-x86-64-generic-squashfs-combined-efi.img.gz` 用于在 UEFI 系统上安装 OpenWrt
+- `immortalwrt-[xxx]-x86-64-generic-squashfs-combined-efi.vmdk` 用于在 VMware 等虚拟机上安装 OpenWrt
+- `immortalwrt-[xxx]-x86-64-generic-squashfs-combined-efi.qcow2` 用于在 Proxmox VE 上安装 OpenWrt
+- `immortalwrt-[xxx]-x86-64-generic-squashfs-rootfs.img.gz` rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
+- `immortalwrt-[xxx]-x86-64-generic.manifest` 构建 OpenWrt 固件时使用的软件包和版本信息
 
 
 ## 更新时间

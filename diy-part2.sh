@@ -13,11 +13,11 @@
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
 
-# Argon Theme
-git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon-18.06
-
 # WolPlus
-mv files/luci-app-wolplus package/lean/
+mv files/luci-app-wolplus package/
 
-# OpenClash
-git clone https://github.com/vernesong/OpenClash.git --depth=1 package/luci-app-openclash
+# MosDNS
+find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
+find ./ | grep Makefile | grep mosdns | xargs rm -f
+git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
+git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
