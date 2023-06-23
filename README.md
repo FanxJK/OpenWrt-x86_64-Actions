@@ -17,7 +17,6 @@
 - `luci-app-turboacc` (使用 Linux 原生的 Flow Offloading, 没有使用 Shortcut FE, 避免全锥型 NAT 失效)
 - `luci-app-iptvhelper`
 - `luci-app-msd_lite`
-- `open-vm-tools-fuse`
 - `qemu-ga`
 - `nginx`
 - `msd_lite`
@@ -33,7 +32,6 @@
 - `feeds.buildinfo` 构建固件时使用的 OpenWrt feeds 的版本和信息
 - `immortalwrt-[xxx]-x86-64-generic-kernel.bin` OpenWrt 固件的内核镜像文件
 - `immortalwrt-[xxx]-x86-64-generic-squashfs-combined-efi.img.gz` 用于在 UEFI 系统上安装 OpenWrt
-- `immortalwrt-[xxx]-x86-64-generic-squashfs-combined-efi.vmdk` 用于在 VMware 等虚拟机上安装 OpenWrt
 - `immortalwrt-[xxx]-x86-64-generic-squashfs-combined-efi.qcow2` 用于在 Proxmox VE 上安装 OpenWrt
 - `immortalwrt-[xxx]-x86-64-generic-squashfs-rootfs.img.gz` rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
 - `immortalwrt-[xxx]-x86-64-generic.manifest` 构建 OpenWrt 固件时使用的软件包和版本信息
