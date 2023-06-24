@@ -17,6 +17,7 @@
 - `luci-app-turboacc` (使用 Linux 原生的 Flow Offloading, 没有使用 Shortcut FE, 避免全锥型 NAT 失效)
 - `luci-app-iptvhelper`
 - `luci-app-msd_lite`
+- `luci-app-upnp`
 - `qemu-ga`
 - `nginx`
 - `msd_lite`
