@@ -13,6 +13,11 @@ name: Build OpenWrt
 on:
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      clean_cache:
+        description: 'Clean cache'
+        required: false
+        default: false
   schedule:
     - cron: '0 1 * * 5'
 
@@ -64,6 +69,13 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH --single-branch --filter=blob:none openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
+    - name: Cache
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: ${{ github.workspace }}/openwrt
+        clean: ${{ github.event.inputs.clean_cache }}
+        
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
