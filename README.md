@@ -47,7 +47,7 @@
 每天的 UTC 时间周五 01:23 自动检查 [Tags](https://github.com/immortalwrt/immortalwrt/tags) 更新并编译上传到 [Releases](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases)  
 > 只编译 Release 版，不编译 RC 版  
 
-[Tags](https://github.com/FanxJK/OpenWrt-x86_64-Actions/tags) 为北京时间
+本项目的[Tags](https://github.com/FanxJK/OpenWrt-x86_64-Actions/tags) 为北京时间
 
 ## 免责声明
 
