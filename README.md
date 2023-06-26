@@ -5,8 +5,11 @@
 感谢 [P3TERX](https://github.com/P3TERX) 与 [ImmortalWrt](https://github.com/immortalwrt)
 
 # Changelog
+## 2023-06-27
+加入 OTA 功能
+
 ## 2023-06-26
-- 编译时间修改为随上游稳定版发布更新
+- 编译时间修改为随上游稳定版发布更新 (版本固定在 21.02)
 
 ## 2023-06-24
 - 切换到 `ImmortalWrt 21.02` 源码，之前版本请全新安装
