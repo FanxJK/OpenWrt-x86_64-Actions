@@ -1,0 +1,56 @@
+#
+# Copyright (c) 2019-2021 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# File: .github/workflows/update-checker.yml
+# Description: Source code update checker
+#
+
+name: Update Checker
+
+env:
+  REPO_NAME: immortalwrt/immortalwrt
+  BUILD_VER: 21.02
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 1 * * *'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Check Updates
+      run: |
+        CURRENT_VER=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
+        -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" | awk -F '"' '/name/{split($4, a, "-"); print a[1]}' | head -n 1)
+        REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
+        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | grep $BUILD_VER | head -n 1)
+        echo "Current Version: $CURRENT_VER"
+        echo "Repo Version: $REPO_TAG"
+        echo "CURRENT_VER=$CURRENT_VER" >> $GITHUB_ENV
+        echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
+        if [ "$CURRENT_VER" == "$REPO_TAG" ]; then
+          echo "No Updates"
+          exit 0
+        fi
+        echo "Found Updates, Start Build..."
+
+    - name: Trigger build
+      if: ${{ env.CURRENT_VER }} != ${{ env.REPO_TAG }}
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.MY_SECRETS_TOKEN }}
+        event-type: Source Code Update
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        retain_days: 1
+        keep_minimum_runs: 1

@@ -18,8 +18,6 @@ on:
         description: 'Clean cache'
         required: false
         default: false
-  schedule:
-    - cron: '23 1 * * *'
 
 env:
   REPO_NAME: immortalwrt/immortalwrt
@@ -42,17 +40,6 @@ jobs:
       contents: write
 
     steps:
-    
-    - name: Check Updates
-      run: |
-        CURRENT_VER=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
-        -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" | awk -F '"' '/name/{split($4, a, "-"); print a[1]}' | head -n 1)
-        REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
-        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | grep $BUILD_VER | head -n 1)
-        echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
-        if [ "$CURRENT_VER" != "$REPO_TAG" ]; then
-          exit 0
-        fi
 
     - name: Initialization environment
       env:
@@ -80,6 +67,9 @@ jobs:
       run: |
         df -hT $PWD
         REPO_URL="https://github.com/$REPO_NAME.git"
+        REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
+        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | grep $BUILD_VER | head -n 1)
+        echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
         git clone $REPO_URL -b ${{ env.REPO_TAG }} --depth=1 openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
