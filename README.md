@@ -5,8 +5,11 @@
 感谢 [P3TERX](https://github.com/P3TERX) 与 [ImmortalWrt](https://github.com/immortalwrt)
 
 # Changelog
+## 2023-06-26
+- 编译时间修改为随上游稳定版发布更新
+
 ## 2023-06-24
-切换到 ImmortalWrt 21.02 源码，之前版本请全新安装
+- 切换到 `ImmortalWrt 21.02` 源码，之前版本请全新安装
 
 # 说明
 软件包:
@@ -41,7 +44,9 @@
 
 ## 更新时间
 
-每周的 UTC 时间周五 01:00 自动编译并更新并上传到 [Releases](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases)  
+每天的 UTC 时间周五 01:23 自动检查 [Tags](https://github.com/immortalwrt/immortalwrt/tags) 更新并编译上传到 [Releases](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases)  
+> 只编译 Release 版，不编译 RC 版  
+
 [Tags](https://github.com/FanxJK/OpenWrt-x86_64-Actions/tags) 为北京时间
 
 ## 免责声明

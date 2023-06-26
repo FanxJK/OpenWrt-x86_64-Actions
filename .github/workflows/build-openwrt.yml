@@ -6,7 +6,7 @@
 #
 # https://github.com/P3TERX/Actions-OpenWrt
 # Description: Build OpenWrt using GitHub Actions
-#
+#2023.06.24-2325
 
 name: Build OpenWrt
 
@@ -19,11 +19,12 @@ on:
         required: false
         default: false
   schedule:
-    - cron: '0 1 * * 5'
+    - cron: '23 1 * * *'
 
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-21.02
+  REPO_NAME: immortalwrt/immortalwrt
+  # REPO_BRANCH: master
+  BUILD_VER: '21.02'
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -41,8 +42,6 @@ jobs:
       contents: write
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@main
 
     - name: Initialization environment
       env:
@@ -62,11 +61,24 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
+    - name: Check Updates
+      run: |
+        CURRENT_VER=$(curl -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" | awk -F '"' '/name/{split($4, a, "-"); print a[1]}' | head -n 1)
+        REPO_TAG=$(curl -sX GET "https://api.github.com/repos/$REPO_NAME/tags" -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | head -n 1)
+        echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
+        if [ "$CURRENT_VER" != "$REPO_TAG" ]; then
+          exit 0
+        fi
+
+    - name: Checkout
+      uses: actions/checkout@main
+
     - name: Clone source code
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH --single-branch --filter=blob:none openwrt
+        REPO_URL="https://github.com/$REPO_NAME.git"
+        git clone $REPO_URL -b ${{ env.REPO_TAG }} --depth=1 openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Cache
@@ -148,7 +160,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "RELEASE_TAG=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_ENV
+        echo "RELEASE_TAG=${{ env.REPO_TAG }}-$(date +"%Y.%m.%d")" >> $GITHUB_ENV
         echo "RELEASE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware to release
