@@ -24,7 +24,7 @@ on:
 env:
   REPO_NAME: immortalwrt/immortalwrt
   # REPO_BRANCH: master
-  BUILD_VER: '21.02'
+  BUILD_VER: 21.02
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -63,8 +63,10 @@ jobs:
 
     - name: Check Updates
       run: |
-        CURRENT_VER=$(curl -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" | awk -F '"' '/name/{split($4, a, "-"); print a[1]}' | head -n 1)
-        REPO_TAG=$(curl -sX GET "https://api.github.com/repos/$REPO_NAME/tags" -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | head -n 1)
+        CURRENT_VER=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
+        -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" | awk -F '"' '/name/{split($4, a, "-"); print a[1]}' | head -n 1)
+        REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
+        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | grep $BUILD_VER | head -n 1)
         echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
         if [ "$CURRENT_VER" != "$REPO_TAG" ]; then
           exit 0
