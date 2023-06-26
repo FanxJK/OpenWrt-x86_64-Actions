@@ -16,6 +16,9 @@ sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_gener
 # WolPlus
 mv files/luci-app-wolplus package/
 
+# easyupdate
+mv files/luci-app-easyupdate package/
+
 # MosDNS
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
