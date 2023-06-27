@@ -94,10 +94,10 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Add Github release Tags
+    - name: Add Github release Tag to firmware
       run: |
         cd openwrt
-        echo DISTRIB_GITHUBVER=\'${{ env.REPO_TAG }}-$(date +"%Y.%m.%d")\' >> package/base-files/files/etc/openwrt_release
+        echo "DISTRIB_GITHUBVER='${{ env.REPO_TAG }}-$(date +"%Y.%m.%d")'" >> package/base-files/files/etc/openwrt_release
 
     - name: Load custom configuration
       run: |
