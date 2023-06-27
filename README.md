@@ -40,7 +40,9 @@
 - `immortalwrt-x86-64-generic-kernel.bin` OpenWrt 固件的内核镜像文件
 - `immortalwrt-x86-64-generic-rootfs.tar.gz` rootfs 归档文件，包含 OpenWrt 固件的根文件系统
 - `immortalwrt-x86-64-generic-squashfs-combined-efi.img.gz` 用于在 UEFI 系统上安装 OpenWrt
-- `immortalwrt-x86-64-generic-squashfs-combined-efi.qcow2` 用于在 Proxmox VE 上安装 OpenWrt
+- `immortalwrt-x86-64-generic-squashfs-combined-efi.qcow2` 用于在 Proxmox VE 上安装 OpenWrt (EFI 引导)
+- `immortalwrt-x86-64-generic-squashfs-combined.img.gz` 用于在传统 BIOS 系统上安装 OpenWrt
+- `immortalwrt-x86-64-generic-squashfs-combined.qcow2` 用于在 Proxmox VE 上安装 OpenWrt (传统 BIOS 引导)
 - `immortalwrt-x86-64-generic-squashfs-rootfs.img.gz` rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
 - `immortalwrt-x86-64-generic.manifest` 构建 OpenWrt 固件时使用的软件包和版本信息
 
