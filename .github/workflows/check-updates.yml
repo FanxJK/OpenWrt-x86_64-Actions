@@ -43,7 +43,7 @@ jobs:
         echo "Found Updates, Start Build..."
 
     - name: Trigger build
-      if: ${{ env.CURRENT_VER }} != ${{ env.REPO_TAG }}
+      if: ${{ env.CURRENT_VER != env.REPO_TAG }}
       uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ secrets.MY_SECRETS_TOKEN }}
