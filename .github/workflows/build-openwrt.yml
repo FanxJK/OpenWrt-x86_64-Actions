@@ -22,7 +22,7 @@ on:
 env:
   REPO_NAME: immortalwrt/immortalwrt
   # REPO_BRANCH: master
-  BUILD_VER: 21.02
+  BUILD_VER: 23.05
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -68,7 +68,7 @@ jobs:
         df -hT $PWD
         REPO_URL="https://github.com/$REPO_NAME.git"
         REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
-        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | grep $BUILD_VER | head -n 1)
+        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep $BUILD_VER | head -n 1)
         echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
         echo "Build Version: $REPO_TAG"
         git clone $REPO_URL -b $REPO_TAG --depth=1 openwrt

@@ -13,7 +13,7 @@ name: Update Checker
 
 env:
   REPO_NAME: immortalwrt/immortalwrt
-  BUILD_VER: 21.02
+  BUILD_VER: 23.05
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         CURRENT_VER=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
         -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" | awk -F '"' '/name/{split($4, a, "-"); print a[1]}' | head -n 1)
         REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
-        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep -v 'rc' | grep $BUILD_VER | head -n 1)
+        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep $BUILD_VER | head -n 1)
         echo "Current Version: $CURRENT_VER"
         echo "Repo Version: $REPO_TAG"
         echo "CURRENT_VER=$CURRENT_VER" >> $GITHUB_ENV

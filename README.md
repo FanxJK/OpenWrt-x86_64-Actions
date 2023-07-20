@@ -5,8 +5,15 @@
 感谢 [P3TERX](https://github.com/P3TERX) 与 [ImmortalWrt](https://github.com/immortalwrt)
 
 # Changelog
+## 2023-07-20
+- 更新 OpenWrt 版本到 23.05
+- 去除 `BBR`
+- 去除 `Turbo ACC`
+- 默认防火墙现已切换到 `nftables`
+- 现已默认内置 `kmod-nft-fullcone` `kmod-nft-offload`
+
 ## 2023-06-27
-加入 OTA 功能
+- 加入 OTA 功能
 
 ## 2023-06-26
 - 编译时间修改为随上游稳定版发布更新 (版本固定在 21.02)
@@ -20,8 +27,6 @@
 - `luci-app-wolplus`
 - `luci-app-openclash`
 - `luci-app-uugamebooster`
-- `luci-app-turboacc` (使用 Linux 原生的 Flow Offloading, 没有使用 Shortcut FE, 避免全锥型 NAT 失效)
-- `luci-app-iptvhelper`
 - `luci-app-msd_lite`
 - `luci-app-upnp`
 - `qemu-ga`
