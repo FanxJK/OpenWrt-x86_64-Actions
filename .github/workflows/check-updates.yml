@@ -28,10 +28,16 @@ jobs:
 
     - name: Check Updates
       run: |
-        CURRENT_VER=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
-        -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" | awk -F '"' '/name/{split($4, a, "-"); print a[1]}' | head -n 1)
+        CURRENT_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
+        -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" | awk -F '"' '/name/{print $4}' | head -n 1)
         REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
         -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep $BUILD_VER | head -n 1)
+        # 判断 CURRENT_TAG 是否包含 rc
+        if [[ $CURRENT_TAG =~ "rc" ]]; then
+                CURRENT_VER=$(echo "$CURRENT_TAG" | awk -F'-' '{print $1 "-" $2}')
+        else
+                CURRENT_VER=$(echo "$CURRENT_TAG" | awk -F'-' '{print $1}')
+        fi
         echo "Current Version: $CURRENT_VER"
         echo "Repo Version: $REPO_TAG"
         echo "CURRENT_VER=$CURRENT_VER" >> $GITHUB_ENV
