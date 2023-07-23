@@ -4,24 +4,9 @@
 基于 [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt) 修改，去除了已弃用或即将弃用的库和环境，解决 Actions WARNING 问题  
 感谢 [P3TERX](https://github.com/P3TERX) 与 [ImmortalWrt](https://github.com/immortalwrt)
 
-# Changelog
-## 2023-07-20
-- 更新 OpenWrt 版本到 23.05
-- 去除 `BBR`
-- 去除 `Turbo ACC`
-- 默认防火墙现已切换到 `nftables`
-- 现已默认内置 `kmod-nft-fullcone` `kmod-nft-offload`
-
-## 2023-06-27
-- 加入 OTA 功能
-
-## 2023-06-26
-- 编译时间修改为随上游稳定版发布更新 (版本固定在 21.02)
-
-## 2023-06-24
-- 切换到 `ImmortalWrt 21.02` 源码，之前版本请全新安装
-
 # 说明
+更新日志: [ChangeLog.md](ChangeLog.md)  
+
 软件包:
 - `luci-app-mosdns`
 - `luci-app-wolplus`
@@ -55,7 +40,6 @@
 ## 更新时间
 
 每天的 UTC 时间周五 01:23 自动检查 [Tags](https://github.com/immortalwrt/immortalwrt/tags) 更新并编译上传到 [Releases](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases)  
-> 只编译 Release 版，不编译 RC 版  
 
 ## 免责声明
 
