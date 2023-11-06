@@ -1,8 +1,12 @@
+# 2023-11-06
+- 新增 SFTP 支持
+
 # 2023-07-20
-- 更新 OpenWrt 版本到 23.05
+- 更新 ImmortalWrt 版本到 23.05
 - 去除 `BBR`
 - 去除 `Turbo ACC`
 - 默认防火墙现已切换到 `nftables`
+- 防火墙现已默认支持 `FullCone NAT`、`FullCone NAT6`
 
 # 2023-06-27
 - 加入 OTA 功能
