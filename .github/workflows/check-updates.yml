@@ -29,7 +29,7 @@ jobs:
     - name: Check Updates
       run: |
         CURRENT_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
-        -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/tags" | awk -F '"' '/name/{print $4}' | head -n 1)
+        -sX GET "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | awk -F '"' '/tag_name/{print $4}')
         REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
         -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep $BUILD_VER | head -n 1)
         if [[ $CURRENT_TAG =~ "rc" ]]; then
