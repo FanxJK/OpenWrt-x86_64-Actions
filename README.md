@@ -39,7 +39,7 @@
 
 ## 更新时间
 
-每天的 UTC 时间周五 01:23 自动检查 [Tags](https://github.com/immortalwrt/immortalwrt/tags) 更新并编译上传到 [Releases](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases)  
+每天 01:23（UTC）自动检查 [https://github.com/immortalwrt/immortalwrt/tags](https://github.com/immortalwrt/immortalwrt/tags) 更新并编译上传到 [Releases](https://github.com/FanxJK/OpenWrt-x86_64-Actions/releases)  
 
 ## 免责声明
 
