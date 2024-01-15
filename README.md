@@ -14,6 +14,9 @@
 - `luci-app-uugamebooster`
 - `luci-app-msd_lite`
 - `luci-app-upnp`
+- `luci-app-fileassistant`
+- `luci-app-syncdial`
+- `luci-app-mwan3`
 - `qemu-ga`
 - `nginx`
 - `msd_lite`
