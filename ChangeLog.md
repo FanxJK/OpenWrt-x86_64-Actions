@@ -1,7 +1,5 @@
 # 2024-01-16
 - 新增 luci-app-fileassistant
-- 新增 luci-app-syncdial
-- 新增 luci-app-mwan3
 
 # 2023-11-29
 - 新增 SmartDNS
