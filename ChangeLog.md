@@ -1,3 +1,6 @@
+# 2024-01-30
+- 删除 MosDNS
+
 # 2024-01-16
 - 新增 luci-app-fileassistant
 

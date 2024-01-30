@@ -8,7 +8,6 @@
 更新日志: [ChangeLog.md](ChangeLog.md)  
 
 软件包:
-- `luci-app-mosdns`
 - `luci-app-wolplus`
 - `luci-app-openclash`
 - `luci-app-uugamebooster`
@@ -17,7 +16,6 @@
 - `luci-app-fileassistant`
 - `qemu-ga`
 - `nginx`
-- `msd_lite`
 
 只编译了极简的 OpenWrt 系统，仅包含必要的软件包和应用程序，以确保系统稳定和流畅。
 
