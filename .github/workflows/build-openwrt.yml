@@ -17,6 +17,7 @@ on:
       clean_cache:
         description: 'Clean cache'
         required: false
+        default: "false"
 
 env:
   REPO_NAME: immortalwrt/immortalwrt
