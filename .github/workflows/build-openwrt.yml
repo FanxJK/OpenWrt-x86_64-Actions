@@ -17,7 +17,6 @@ on:
       clean_cache:
         description: 'Clean cache'
         required: false
-        default: false
 
 env:
   REPO_NAME: immortalwrt/immortalwrt
@@ -162,7 +161,7 @@ jobs:
         echo "RELEASE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: ${{ env.RELEASE_STATUS }} == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ github.token }}
