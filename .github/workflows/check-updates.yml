@@ -49,7 +49,7 @@ jobs:
 
     - name: Trigger build
       if: ${{ env.CURRENT_VER != env.REPO_TAG }}
-      uses: peter-evans/repository-dispatch@v2
+      uses: peter-evans/repository-dispatch@v3
       with:
         token: ${{ secrets.MY_SECRETS_TOKEN }}
         event-type: Source Code Update
