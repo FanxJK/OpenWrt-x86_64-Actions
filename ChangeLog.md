@@ -1,7 +1,4 @@
 # 2024-05-15
-- 新增多拨支持
-- 新增 `luci-app-mwan3`
-- 新增 `luci-app-syncdial`
 - 将 Nginx 切换回默认的 uHTTPd
 
 # 2024-03-26
