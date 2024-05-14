@@ -1,3 +1,9 @@
+# 2024-05-15
+- 新增多拨支持
+- 新增 `luci-app-mwan3`
+- 新增 `luci-app-syncdial`
+- 将 Nginx 切换回默认的 uHTTPd
+
 # 2024-03-26
 - 暂时降级 SmartDNS 至 Release 43，解决国际域名解析问题
 
