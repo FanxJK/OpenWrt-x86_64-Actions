@@ -49,13 +49,13 @@ jobs:
 
     - name: Trigger build
       if: ${{ env.CURRENT_VER != env.REPO_TAG }}
-      uses: peter-evans/repository-dispatch@v3
+      uses: peter-evans/repository-dispatch@main
       with:
         token: ${{ secrets.MY_SECRETS_TOKEN }}
         event-type: Source Code Update
 
     - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@v2
+      uses: Mattraks/delete-workflow-runs@main
       with:
         token: ${{ github.token }}
         retain_days: 1
