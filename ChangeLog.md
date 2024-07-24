@@ -1,3 +1,6 @@
+# 2024-07-25
+- 新增 `luci-app-natmap`
+
 # 2024-06-25
 - 新增 `luci-app-zerotier`
 - 去除 SmartDNS 的版本固定，使用最新版

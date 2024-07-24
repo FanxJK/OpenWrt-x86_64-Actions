@@ -12,6 +12,7 @@
 - `luci-app-openclash`
 - `luci-app-uugamebooster`
 - `luci-app-msd_lite`
+- `luci-app-natmap`
 - `luci-app-upnp`
 - `luci-app-fileassistant`
 - `luci-app-zerotier`
