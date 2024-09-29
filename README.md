@@ -10,7 +10,6 @@
 软件包:
 - `luci-app-wolplus`
 - `luci-app-openclash`
-- `luci-app-uugamebooster`
 - `luci-app-msd_lite`
 - `luci-app-natmap`
 - `luci-app-upnp`

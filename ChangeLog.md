@@ -1,3 +1,7 @@
+# 2024-09-29
+- 删除无效的软件包
+- `luci-app-uugamebooster`
+
 # 2024-07-25
 - 新增 `luci-app-natmap`
 
