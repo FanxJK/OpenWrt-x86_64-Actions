@@ -16,6 +16,7 @@
 - `luci-app-fileassistant`
 - `luci-app-zerotier`
 - `luci-app-uugamebooster`
+- `pppoe-discovery`
 - `qemu-ga`
 
 只编译了极简的 OpenWrt 系统，仅包含必要的软件包和应用程序，以确保系统稳定和流畅。

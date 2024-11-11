@@ -1,3 +1,6 @@
+# 2024-11-12
+- 新增 `pppoe-discovery`
+
 # 2024-07-25
 - 新增 `luci-app-natmap`
 
