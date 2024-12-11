@@ -14,7 +14,7 @@
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 
 # Remove git revision
-curl https://raw.githubusercontent.com/immortalwrt/immortalwrt/openwrt-23.05/feeds.conf.default -o feeds.conf.default
+curl https://raw.githubusercontent.com/immortalwrt/immortalwrt/openwrt-24.10/feeds.conf.default -o feeds.conf.default
 
 # Add a feed source
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default

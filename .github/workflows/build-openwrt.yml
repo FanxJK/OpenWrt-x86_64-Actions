@@ -22,7 +22,7 @@ on:
 env:
   REPO_NAME: immortalwrt/immortalwrt
   # REPO_BRANCH: master
-  BUILD_VER: 23.05
+  BUILD_VER: 24.10
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -34,7 +34,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       actions: write
       contents: write

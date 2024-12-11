@@ -1,3 +1,6 @@
+# 2024-12-11
+- 更新 ImmortalWrt 版本到 24.10
+
 # 2024-11-12
 - 新增 `pppoe-discovery`
 
