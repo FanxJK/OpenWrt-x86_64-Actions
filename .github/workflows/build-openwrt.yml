@@ -158,11 +158,12 @@ jobs:
         echo "RELEASE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@master
+      uses: softprops/action-gh-release@v2
       if: ${{ env.RELEASE_STATUS }} == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
+        body_path: CHANGELOG.txt
         tag_name: ${{ env.RELEASE_TAG }}
         files: ${{ env.FIRMWARE }}/*
 

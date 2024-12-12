@@ -1,0 +1,2 @@
+- 更新 ImmortalWrt 版本到 24.10
+- 新增 `pppoe-discovery`
