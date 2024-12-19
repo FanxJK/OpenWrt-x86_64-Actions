@@ -16,6 +16,7 @@
 - `luci-app-fileassistant`
 - `luci-app-zerotier`
 - `luci-app-uugamebooster`
+- `luci-app-easytier`
 - `pppoe-discovery`
 - `qemu-ga`
 
