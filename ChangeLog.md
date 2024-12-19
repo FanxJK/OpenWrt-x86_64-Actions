@@ -1,3 +1,7 @@
+# 2024-12-19
+- 新增 `luci-app-easytier`
+- 临时修复 OpenClash 的不自动关闭连接问题
+
 # 2024-12-11
 - 更新 ImmortalWrt 版本到 24.10
 

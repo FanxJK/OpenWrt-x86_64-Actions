@@ -1,2 +1,4 @@
 - 更新 ImmortalWrt 版本到 24.10
+- 新增 `luci-app-easytier`
 - 新增 `pppoe-discovery`
+- 临时修复 OpenClash 的不自动关闭连接问题 (v0.46.050)
