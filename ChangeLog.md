@@ -1,3 +1,6 @@
+# 2024-12-31
+- OpenClash 的不自动关闭连接问题上游已解决
+
 # 2024-12-19
 - 新增 `luci-app-easytier`
 - 临时修复 OpenClash 的不自动关闭连接问题

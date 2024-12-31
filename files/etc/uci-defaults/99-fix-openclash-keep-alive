@@ -1,5 +1,0 @@
-#!/bin/sh
-
-if grep -q "Value\['disable-keep-alive'\]=true" /usr/share/openclash/yml_change.sh; then
-    sed -i "/Value\['disable-keep-alive'\]=true/d" /usr/share/openclash/yml_change.sh
-fi
