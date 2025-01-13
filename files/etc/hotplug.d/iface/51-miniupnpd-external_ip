@@ -1,0 +1,7 @@
+#!/bin/bash
+sleep 10
+#当wan口网卡启动时，更新一下upnp服务中的假公网IP
+if [ "$ACTION" = "ifup" ] && [ "$INTERFACE" = "wan" ]; then
+    #这里指定第二个脚本位置
+    /usr/bin/update-upnp.sh
+fi

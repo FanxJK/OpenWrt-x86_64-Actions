@@ -1,3 +1,4 @@
 - 更新 ImmortalWrt 版本到 24.10
 - 新增 `luci-app-easytier`
 - 新增 `pppoe-discovery`
+- 修复 NAT 环境下的 UPnP
