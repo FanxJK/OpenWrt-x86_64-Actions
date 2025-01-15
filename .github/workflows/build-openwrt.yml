@@ -62,7 +62,6 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-
     - name: Checkout
       uses: actions/checkout@main
 
