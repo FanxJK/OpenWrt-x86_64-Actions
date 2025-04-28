@@ -1,6 +1,7 @@
 #!/bin/bash
-sleep 60
 
 if [ "$ACTION" = "ifup" ] && [ "$INTERFACE" = "wan" ]; then
+    logger -t "update-upnp" "WAN 接口已连接, 开始更新 UPnP 配置"
+    sleep 60
     /usr/bin/update-upnp.sh
 fi
