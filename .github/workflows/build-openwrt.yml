@@ -158,7 +158,7 @@ jobs:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: Generate release tag
+    - name: Create release
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
