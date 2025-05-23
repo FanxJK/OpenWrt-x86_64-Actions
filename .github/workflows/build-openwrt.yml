@@ -100,8 +100,9 @@ jobs:
     - name: Add Github release Tag to firmware
       run: |
         cd openwrt
-        echo "RELEASE_TAG=${{ env.REPO_TAG }}-$(date +"%Y.%m.%d")" >> $GITHUB_ENV
-        echo "DISTRIB_GITHUBVER=${{ env.RELEASE_TAG }}" >> package/base-files/files/etc/openwrt_release
+        BUILD_DATE=$(date +"%Y.%m.%d")
+        echo "RELEASE_TAG=${{ env.REPO_TAG }}-$BUILD_DATE" >> $GITHUB_ENV
+        echo "DISTRIB_GITHUBVER='${{ env.REPO_TAG }}-$BUILD_DATE'" >> package/base-files/files/etc/openwrt_release
 
     - name: Load custom configuration
       run: |
