@@ -116,7 +116,7 @@ jobs:
         fi
         curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/$TOOLCHAIN_FILENAME -O
         mkdir -p /workdir/openwrt/toolchain
-        tar -xf ${TOOLCHAIN_FILENAME%.tar.zst}
+        tar -xf ${TOOLCHAIN_FILENAME}
         rm -f ${TOOLCHAIN_FILENAME%.tar.zst} sha256sums
 
     - name: Ext toolchain
