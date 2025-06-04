@@ -114,15 +114,15 @@ jobs:
           echo "TOOLCHAIN_FILENAME not found, skipping build."
           exit 0
         fi
-        curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/$TOOLCHAIN_FILENAME -o toolchain.tar.zst
-        tar -xf toolchain.tar.zst
-        rm -f toolchain.tar.zst sha256sums
-        mv toolchain /workdir/openwrt/toolchain
+        curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/$TOOLCHAIN_FILENAME -O
+        mkdir -p /workdir/openwrt/toolchain
+        tar -xf ${TOOLCHAIN_FILENAME%.tar.zst}
+        rm -f ${TOOLCHAIN_FILENAME%.tar.zst} sha256sums
 
     - name: Ext toolchain
       run: |
         cd openwrt
-        ./scripts/ext-toolchain.sh --toolchain /workdir/openwrt/toolchain --config x86/64
+        ./scripts/ext-toolchain.sh --toolchain /workdir/openwrt/${TOOLCHAIN_FILENAME%.tar.zst} --config x86/64
         make defconfig
 
     - name: Add Github release Tag to firmware
