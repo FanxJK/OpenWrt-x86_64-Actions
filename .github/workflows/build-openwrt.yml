@@ -88,14 +88,14 @@ jobs:
       run: |
         cd openwrt
         set -e
-        # 先尝试下载 sha256sums 文件
+        # Try to download sha256sums file first
         if ! curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/sha256sums -o sha256sums; then
-          echo "sha256sums file download failed"
+          echo "Failed to download sha256sums file, skipping build."
           exit 0
         fi
         TOOLCHAIN_FILENAME=$(grep toolchain sha256sums | awk '{print $2}' | sed 's/^\*//')
         if [ -z "$TOOLCHAIN_FILENAME" ]; then
-          echo "no toolchain file found"
+          echo "TOOLCHAIN_FILENAME not found, skipping build."
           exit 0
         fi
         curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/$TOOLCHAIN_FILENAME -o toolchain.tar.zst
