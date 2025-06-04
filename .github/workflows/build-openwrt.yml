@@ -127,7 +127,7 @@ jobs:
         fi
         echo "Using toolchain: ${{ env.TOOLCHAIN_NAME }}"
         TOOLCHAIN_DIR=$(ls -d /workdir/openwrt/${{ env.TOOLCHAIN_NAME }}/toolchain-*)
-        ./scripts/ext-toolchain.sh --toolchain /workdir/openwrt/${{ env.TOOLCHAIN_NAME }}/$TOOLCHAIN_DIR --config x86/64
+        ./scripts/ext-toolchain.sh --toolchain $TOOLCHAIN_DIR --config x86/64
         make defconfig
 
     - name: Add Github release Tag to firmware
