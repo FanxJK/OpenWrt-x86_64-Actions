@@ -83,7 +83,23 @@ jobs:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
         clean: ${{ github.event.inputs.clean_cache }}
-    
+
+    - name: Load custom feeds
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+
+    - name: Update feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: Install feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: Re Install feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
     - name: Download toolchain
       run: |
         cd openwrt
@@ -99,21 +115,14 @@ jobs:
           exit 0
         fi
         curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/$TOOLCHAIN_FILENAME -o toolchain.tar.zst
-        tar -I zstd -xf toolchain.tar.zst
+        tar -xf toolchain.tar.zst
         rm -f toolchain.tar.zst sha256sums
 
-    - name: Load custom feeds
+    - name: Ext toolchain
       run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $DIY_P1_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
-
-    - name: Update feeds
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
+        ./scripts/ext-toolchain.sh --toolchain /workdir/toolchain --config x86/64
+        make defconfig
 
     - name: Add Github release Tag to firmware
       run: |
