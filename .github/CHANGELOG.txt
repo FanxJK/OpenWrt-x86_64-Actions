@@ -9,3 +9,4 @@
 - 更新 UU 加速器和 EasyTier 的版本
 - 优化 OTA 更新流程，可显示 ChangeLog 和下载进度
 - 修复 EasyTier 每次启动都重新下载核心的问题
+- 新增 FakeHTTP
