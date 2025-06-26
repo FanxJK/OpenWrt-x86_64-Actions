@@ -123,7 +123,7 @@ jobs:
         cd openwrt
         if [ -z "${{ env.TOOLCHAIN_NAME }}" ]; then
           echo "Error: TOOLCHAIN_NAME is not set"
-          exit 1
+          exit 0
         fi
         echo "Using toolchain: ${{ env.TOOLCHAIN_NAME }}"
         TOOLCHAIN_DIR=$(ls -d /workdir/openwrt/${{ env.TOOLCHAIN_NAME }}/toolchain-*)

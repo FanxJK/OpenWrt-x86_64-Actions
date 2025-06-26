@@ -1,3 +1,6 @@
+# 2025-06-26
+- 新增 `luci-app-cloudflared`
+
 # 2025-06-10
 - 新增 `FakeHTTP`
 

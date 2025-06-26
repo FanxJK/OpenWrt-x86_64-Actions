@@ -17,7 +17,7 @@
 - `luci-app-zerotier`
 - `luci-app-uugamebooster`
 - `luci-app-easytier`
-- `easytier`
+- `luci-app-cloudflared`
 - `pppoe-discovery`
 - `qemu-ga`
 
