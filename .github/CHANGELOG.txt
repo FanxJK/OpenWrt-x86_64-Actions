@@ -3,6 +3,3 @@
 - FakeHTTP 添加多 host 和多网卡支持
 - FakeHTTP 添加混淆为 HTTPS 的支持
 - 新增 luci-app-cloudflared
-- 新增 luci-app-mwan3
-- 新增 luci-app-syncdial
-- 添加多拨、负载均衡支持
