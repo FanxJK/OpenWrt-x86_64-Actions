@@ -1,3 +1,7 @@
 - 更新 ImmortalWrt 版本到 24.10.2
-- 更新 UU 加速器和 FakeHTTP 的版本
+- 更新 UU 加速器、FakeHTTP、OpenClash
+- FakeHTTP 添加多 host 和多网卡支持
 - 新增 luci-app-cloudflared
+- 新增 luci-app-mwan3
+- 新增 luci-app-syncdial
+- 添加多拨、负载均衡支持

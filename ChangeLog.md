@@ -1,3 +1,7 @@
+# 2025-07-10
+- 新增 `luci-app-mwan3`
+- 新增 `luci-app-syncdial`
+
 # 2025-06-26
 - 新增 `luci-app-cloudflared`
 - 更新 ImmortalWrt 版本到 24.10.2

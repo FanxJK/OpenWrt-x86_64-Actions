@@ -98,38 +98,6 @@ jobs:
     - name: Re Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Download toolchain
-      run: |
-        cd openwrt
-        set -e
-        # Try to download sha256sums file first
-        if ! curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/sha256sums -o sha256sums; then
-          echo "Failed to download sha256sums file, skipping build."
-          exit 0
-        fi
-        TOOLCHAIN_FILENAME=$(grep toolchain sha256sums | awk '{print $2}' | sed 's/^\*//')
-        if [ -z "$TOOLCHAIN_FILENAME" ]; then
-          echo "TOOLCHAIN_FILENAME not found, skipping build."
-          exit 0
-        fi
-        echo "TOOLCHAIN_NAME=${TOOLCHAIN_FILENAME%.tar.zst}" >> $GITHUB_ENV
-        curl -sfL https://downloads.immortalwrt.org/releases/${REPO_TAG#v}/targets/x86/64/$TOOLCHAIN_FILENAME -O
-        mkdir -p /workdir/openwrt/toolchain
-        tar -xf ${TOOLCHAIN_FILENAME}
-        rm -f ${TOOLCHAIN_FILENAME} sha256sums
-
-    - name: Ext toolchain
-      run: |
-        cd openwrt
-        if [ -z "${{ env.TOOLCHAIN_NAME }}" ]; then
-          echo "Error: TOOLCHAIN_NAME is not set"
-          exit 0
-        fi
-        echo "Using toolchain: ${{ env.TOOLCHAIN_NAME }}"
-        TOOLCHAIN_DIR=$(ls -d /workdir/openwrt/${{ env.TOOLCHAIN_NAME }}/toolchain-*)
-        ./scripts/ext-toolchain.sh --toolchain $TOOLCHAIN_DIR --config x86/64
-        make defconfig
-
     - name: Add Github release Tag to firmware
       run: |
         cd openwrt
