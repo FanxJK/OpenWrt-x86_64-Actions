@@ -44,8 +44,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        # Free up disk space by removing unnecessary packages and files
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /etc/mysql /etc/php /opt/ghc /opt/hostedtoolcache/CodeQL
         sudo rm -rf /usr/local/share/boost /usr/local/graalvm /usr/local/share/powershell /usr/local/share/chromium
         sudo rm -rf /usr/local/lib/node_modules /opt/az /opt/microsoft /usr/share/swift
         sudo docker image prune --all --force
@@ -103,15 +102,6 @@ jobs:
     - name: Re Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Clean feeds cache
-      run: |
-        cd openwrt
-        # Clean feeds cache and git objects to save space
-        rm -rf feeds/*/.git
-        find feeds -name "*.git" -type d -exec rm -rf {} + || true
-        # Clean package source cache
-        rm -rf dl/.git* || true
-
     - name: Add Github release Tag to firmware
       run: |
         cd openwrt
@@ -160,18 +150,11 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        # Use fewer parallel jobs to reduce memory usage and temporary files
-        make -j$(($(nproc)/2)) || make -j1 || make -j1 V=s
+        make -j$(nproc) || make -j1 || make -j1 V=s
         echo "COMPILE_STATUS=success" >> $GITHUB_ENV
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        # Clean up build artifacts to save space
-        rm -rf build_dir/host/*/doc build_dir/host/*/man build_dir/host/*/info
-        rm -rf staging_dir/host/share/doc staging_dir/host/share/man staging_dir/host/share/info
-        find build_dir -name "*.o" -delete || true
-        find build_dir -name "*.a" -delete || true
-        rm -rf tmp/*
 
     - name: Check space usage
       if: (!cancelled())
