@@ -12,3 +12,9 @@
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
+
+# Update OpenClash
+rm -rf feeds/luci/applications/luci-app-openclash
+git clone --depth=1 https://github.com/vernesong/OpenClash.git
+mv OpenClash/luci-app-openclash feeds/luci/applications/luci-app-openclash
+rm -rf OpenClash
