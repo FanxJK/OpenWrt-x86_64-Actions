@@ -1,5 +1,5 @@
 # 2025-07-30
-- 新增 `luci-app-nikki`
+- 新增 `luci-app-fakesip`
 
 # 2025-06-26
 - 新增 `luci-app-cloudflared`

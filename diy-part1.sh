@@ -20,4 +20,3 @@ curl https://raw.githubusercontent.com/immortalwrt/immortalwrt/openwrt-24.10/fee
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 echo 'src-git fanx https://github.com/FanxJK/openwrt-packages' >> feeds.conf.default
-echo "src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main" >> "feeds.conf.default"

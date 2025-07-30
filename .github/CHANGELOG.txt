@@ -1,7 +1,5 @@
-- FakeHTTP 添加多 host 和多网卡支持
-- FakeHTTP 添加混淆为 HTTPS 的支持
 - 新增 luci-app-cloudflared
-- 新增 luci-app-nikki
+- 新增 luci-app-fakesip
 - 修复 libopenssl3 崩溃问题
 - 修复 接口重启后防火墙无法正常重载的问题
 - 修复 检查更新时, IP 触发 GitHub Limit 无法重试检查
