@@ -12,6 +12,7 @@
 - `luci-app-openclash`
 - `luci-app-msd_lite`
 - `luci-app-natmap`
+- `luci-app-nikki`
 - `luci-app-upnp`
 - `luci-app-fileassistant`
 - `luci-app-zerotier`

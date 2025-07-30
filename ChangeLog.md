@@ -1,3 +1,6 @@
+# 2025-07-30
+- 新增 `luci-app-nikki`
+
 # 2025-06-26
 - 新增 `luci-app-cloudflared`
 - 更新 ImmortalWrt 版本到 24.10.2

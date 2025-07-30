@@ -1,3 +1,4 @@
 #!/bin/sh
 
 sed -i '/immortalwrt_fanx/d' /etc/opkg/distfeeds.conf
+sed -i '/immortalwrt_nikki/d' /etc/opkg/distfeeds.conf

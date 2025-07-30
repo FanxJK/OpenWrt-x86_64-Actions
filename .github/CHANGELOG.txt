@@ -1,10 +1,10 @@
-- 更新 ImmortalWrt 版本到 24.10.2
-- 更新 UU 加速器、FakeHTTP、OpenClash 的版本
 - FakeHTTP 添加多 host 和多网卡支持
 - FakeHTTP 添加混淆为 HTTPS 的支持
 - 新增 luci-app-cloudflared
+- 新增 luci-app-nikki
 - 修复 libopenssl3 崩溃问题
 - 修复 接口重启后防火墙无法正常重载的问题
+- 修复 检查更新时, IP 触发 GitHub Limit 无法重试检查
 
 * 防火墙设置 "路由/NAT 卸载" 建议设置为: 软件流量卸载 以开启 Flow Offloading
 * 修复 SmartDNS 依赖: libopenssl3 崩溃问题， SmartDNS 测速模式可选择: tcp:443,tcp:80,ping 以提升速度
