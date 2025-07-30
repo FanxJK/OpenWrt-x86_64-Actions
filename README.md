@@ -16,4 +16,4 @@
 - `immortalwrt-x86-64-generic-squashfs-rootfs.img.gz` rootfs 镜像文件，通常用于 Docker 或 LXC 等容器
 - `immortalwrt-x86-64-generic.manifest` 构建 OpenWrt 固件时使用的软件包和版本信息
 
-## 请注意，该项目仅用于个人学习和测试，请不要下载使用。
+# 请注意，该项目仅用于个人学习和测试，请不要下载使用。
