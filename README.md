@@ -1,28 +1,8 @@
-# OpenWrt-x86_64-Actions
+# 自用测试固件，请勿下载
 
 基于 ImmortalWrt 源码的自用项目，每周自动编译和构建。  
 基于 [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt) 修改，去除已弃用或即将弃用的库和环境并解决 Actions WARNING 问题  
 感谢 [P3TERX](https://github.com/P3TERX) 与 [ImmortalWrt](https://github.com/immortalwrt)
-
-# 说明
-更新日志: [ChangeLog.md](ChangeLog.md)  
-
-软件包:
-- `luci-app-wolplus`
-- `luci-app-openclash`
-- `luci-app-msd_lite`
-- `luci-app-natmap`
-- `luci-app-nikki`
-- `luci-app-upnp`
-- `luci-app-fileassistant`
-- `luci-app-zerotier`
-- `luci-app-uugamebooster`
-- `luci-app-easytier`
-- `luci-app-cloudflared`
-- `pppoe-discovery`
-- `qemu-ga`
-
-只编译了极简的 OpenWrt 系统，仅包含必要的软件包和应用程序，以确保系统稳定和流畅。
 
 ## 下载
 
