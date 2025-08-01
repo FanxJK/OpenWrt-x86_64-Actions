@@ -54,11 +54,11 @@ jobs:
       with:
         token: ${{ secrets.MY_SECRETS_TOKEN }}
         event-type: Source Code Update
-      client-payload: |
-        {
-          "clean_cache": "true",
-          "upload_release": "true"
-        }
+        client-payload: |
+          {
+            "clean_cache": "true",
+            "upload_release": "true"
+          }
         
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
