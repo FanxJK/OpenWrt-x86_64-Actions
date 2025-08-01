@@ -45,8 +45,7 @@ jobs:
           echo "Found Updates, Start Build..."
           echo "HAS_UPDATE=true" >> $GITHUB_ENV
         else
-          echo "No Updates, Keep cache alive..."
-          echo "HAS_UPDATE=false" >> $GITHUB_ENV
+          echo "No Updates"
         fi
 
     - name: Trigger build
@@ -55,24 +54,7 @@ jobs:
       with:
         token: ${{ secrets.MY_SECRETS_TOKEN }}
         event-type: Source Code Update
-        client-payload: '{"clean_cache": "false"}'
-
-    - name: Setup workspace for cache
-      if: ${{ env.HAS_UPDATE == 'false' }}
-      run: |
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
-        REPO_URL="https://github.com/$REPO_NAME.git"
-        git clone $REPO_URL -b $REPO_TAG --depth=1 --single-branch /workdir/openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-
-    - name: Keep cache alive
-      if: ${{ env.HAS_UPDATE == 'false' }}
-      uses: klever1988/cachewrtbuild@main
-      with:
-        ccache: 'true'
-        prefix: ${{ github.workspace }}/openwrt
-        clean: 'false'
+        client-payload: '{"clean_cache": "true"}'
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
