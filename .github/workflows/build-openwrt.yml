@@ -74,7 +74,7 @@ jobs:
         -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep $BUILD_VER | head -n 1)
         echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
         echo "Build Version: $REPO_TAG"
-        git clone $REPO_URL -b $REPO_TAG --depth=1 openwrt
+        git clone $REPO_URL -b $REPO_TAG --depth=1 --single-branch openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         echo "After clone:"
         df -hT
@@ -83,8 +83,16 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
+        mixkey: 'x86_64'
         prefix: ${{ github.workspace }}/openwrt
         clean: ${{ github.event.inputs.clean_cache }}
+
+    - name: Setup ccache
+      run: |
+        # 优化 ccache 配置
+        ccache --set-config=max_size=2G
+        ccache --set-config=compression=true
+        ccache --set-config=compression_level=6
 
     - name: Load custom feeds
       run: |
@@ -122,7 +130,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j8 V=s
+        make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -150,7 +158,10 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        # 设置编译优化环境变量
+        export FORCE_UNSAFE_CONFIGURE=1
+        # 使用更激进的并行编译，失败时逐步降级
+        make -j$(($(nproc) + 1)) V=w || make -j$(nproc) V=s || make -j1 V=s
         echo "COMPILE_STATUS=success" >> $GITHUB_ENV
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
