@@ -132,14 +132,6 @@ jobs:
         # Download build_dir (build states)
         rclone copy r2:openwrt/build_dir openwrt/build_dir --progress || echo "No build_dir cache found"
 
-    - name: Setup ccache
-      run: |
-        ccache --set-config=max_size=10G
-        ccache --set-config=compression=true
-        ccache --set-config=compression_level=4
-        ccache -z
-        echo "ccache directory: $(ccache --show-config | grep cache_dir)"
-
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -210,10 +202,6 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: Show ccache stats
-      if: (!cancelled())
-      run: ccache -s
-
     - name: Upload cache to R2
       if: (!cancelled())
       run: |
@@ -221,7 +209,7 @@ jobs:
 
         cd openwrt
         # Upload ccache
-        if [ -d ~/.cache/ccache ]; then
+        if [ -d ".cache" ]; then
           echo "Uploading ccache..."
           rclone copy .ccache r2:openwrt/ccache --progress
         fi
