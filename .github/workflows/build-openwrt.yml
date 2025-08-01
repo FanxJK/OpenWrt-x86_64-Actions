@@ -107,65 +107,44 @@ jobs:
       if: ${{ github.event.inputs.clean_cache == 'true' }}
       run: |
         echo "Cleaning R2 cache..."
-        rclone delete r2:openwrt/ccache.tar.zst --progress || echo "No ccache to clean"
-        rclone delete r2:openwrt/dl.tar.zst --progress || echo "No dl cache to clean"
-        rclone delete r2:openwrt/staging_dir.tar.zst --progress || echo "No staging_dir cache to clean"
-        rclone delete r2:openwrt/build_dir.tar.zst --progress || echo "No build_dir cache to clean"
-        echo "R2 cache cleaned!"
+        
+        rclone delete r2:openwrt/ccache.tar.zst --progress || echo "No ccache found to delete"
+        rclone delete r2:openwrt/dl.tar.zst --progress || echo "No dl cache found to delete"
+        rclone delete r2:openwrt/staging_dir.tar.zst --progress || echo "No staging_dir cache found to delete"
+        rclone delete r2:openwrt/build_dir.tar.zst --progress || echo "No build_dir cache found to delete"
+        
+        echo "✅ R2 cache cleanup completed."
 
-    - name: Download cache from R2
-      if: ${{ github.event.inputs.clean_cache != 'true' }}
+
+    - name: Upload cache to R2
+      if: (!cancelled())
       run: |
-        echo "Downloading cache from Cloudflare R2..."
-        cd openwrt
-        
-        # Download and extract ccache
-        if rclone ls r2:openwrt/ccache.tar.zst 2>/dev/null; then
-          echo "Downloading ccache..."
-          rclone copy r2:openwrt/ccache.tar.zst . --progress
-          if [ -f ccache.tar.zst ]; then
-            echo "Extracting ccache..."
-            tar --zstd -xf ccache.tar.zst && rm ccache.tar.zst
+        set -Eeuo pipefail
+        echo "Uploading cache to Cloudflare R2 in parallel..."
+        cd openwrt || { echo "❌ 'openwrt' directory not found"; exit 1; }
+
+        compress_and_upload() {
+          local dir="$1"
+          local archive="${dir}.tar.zst"
+
+          if [ -d "$dir" ]; then
+            echo "📦 Compressing ${dir}..."
+            tar --zstd -cf "$archive" "$dir"
+            echo "⬆️ Uploading ${archive} to R2..."
+            rclone copyto "$archive" "r2:openwrt/${archive}" --progress --transfers=4 && rm -f "$archive" &
+          else
+            echo "ℹ️ Skipping ${dir}: directory not found"
           fi
-        else
-          echo "No ccache found, starting fresh"
-        fi
-        
-        # Download and extract dl cache
-        if rclone ls r2:openwrt/dl.tar.zst 2>/dev/null; then
-          echo "Downloading dl cache..."
-          rclone copy r2:openwrt/dl.tar.zst . --progress
-          if [ -f dl.tar.zst ]; then
-            echo "Extracting dl cache..."
-            tar --zstd -xf dl.tar.zst && rm dl.tar.zst
-          fi
-        else
-          echo "No dl cache found"
-        fi
-        
-        # Download and extract staging_dir
-        if rclone ls r2:openwrt/staging_dir.tar.zst 2>/dev/null; then
-          echo "Downloading staging_dir cache..."
-          rclone copy r2:openwrt/staging_dir.tar.zst . --progress
-          if [ -f staging_dir.tar.zst ]; then
-            echo "Extracting staging_dir cache..."
-            tar --zstd -xf staging_dir.tar.zst && rm staging_dir.tar.zst
-          fi
-        else
-          echo "No staging_dir cache found"
-        fi
-        
-        # Download and extract build_dir
-        if rclone ls r2:openwrt/build_dir.tar.zst 2>/dev/null; then
-          echo "Downloading build_dir cache..."
-          rclone copy r2:openwrt/build_dir.tar.zst . --progress
-          if [ -f build_dir.tar.zst ]; then
-            echo "Extracting build_dir cache..."
-            tar --zstd -xf build_dir.tar.zst && rm build_dir.tar.zst
-          fi
-        else
-          echo "No build_dir cache found"
-        fi
+        }
+
+        compress_and_upload .ccache
+        compress_and_upload dl
+        compress_and_upload staging_dir
+        compress_and_upload build_dir
+
+        wait
+
+        echo "✅ All cache uploads to R2 completed."
 
     - name: Load custom feeds
       run: |
@@ -240,42 +219,32 @@ jobs:
     - name: Upload cache to R2
       if: (!cancelled())
       run: |
-        echo "Uploading cache to Cloudflare R2..."
-        cd openwrt
-        
-        # Compress and upload ccache
-        if [ -d ".ccache" ]; then
-          echo "Compressing and uploading ccache..."
-          tar --zstd -cf ccache.tar.zst .ccache
-          rclone copy ccache.tar.zst r2:openwrt/ --progress
-          rm ccache.tar.zst
-        fi
-        
-        # Compress and upload dl cache
-        if [ -d "dl" ]; then
-          echo "Compressing and uploading dl cache..."
-          tar --zstd -cf dl.tar.zst dl
-          rclone copy dl.tar.zst r2:openwrt/ --progress
-          rm dl.tar.zst
-        fi
-        
-        # Compress and upload staging_dir
-        if [ -d "staging_dir" ]; then
-          echo "Compressing and uploading staging_dir cache..."
-          tar --zstd -cf staging_dir.tar.zst staging_dir
-          rclone copy staging_dir.tar.zst r2:openwrt/ --progress
-          rm staging_dir.tar.zst
-        fi
-        
-        # Compress and upload build_dir
-        if [ -d "build_dir" ]; then
-          echo "Compressing and uploading build_dir cache..."
-          tar --zstd -cf build_dir.tar.zst build_dir
-          rclone copy build_dir.tar.zst r2:openwrt/ --progress
-          rm build_dir.tar.zst
-        fi
-        
-        echo "Cache upload completed!"
+        set -Eeuo pipefail
+        echo "Uploading cache to Cloudflare R2 in parallel..."
+        cd openwrt || { echo "❌ 'openwrt' directory not found"; exit 1; }
+
+        compress_and_upload() {
+          local dir="$1"
+          local archive="${dir}.tar.zst"
+
+          if [ -d "$dir" ]; then
+            echo "📦 Compressing ${dir}..."
+            tar --zstd -cf "$archive" "$dir"
+            echo "⬆️ Uploading ${archive} to R2..."
+            rclone copy "$archive" r2:openwrt/ --progress --transfers=4 && rm -f "$archive" &
+          else
+            echo "ℹ️ Skipping ${dir}: directory not found"
+          fi
+        }
+
+        compress_and_upload .ccache
+        compress_and_upload dl
+        compress_and_upload staging_dir
+        compress_and_upload build_dir
+
+        wait
+
+        echo "✅ All cache uploads to R2 completed."
 
     - name: Check space usage
       if: (!cancelled())
