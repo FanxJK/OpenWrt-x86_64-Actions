@@ -115,12 +115,11 @@ jobs:
         
         echo "✅ R2 cache cleanup completed."
 
-
     - name: Download cache from R2
       if: ${{ github.event.inputs.clean_cache != 'true' }}
       run: |
         set -Eeuo pipefail
-        echo "Downloading cache from Cloudflare R2..."
+        echo "Downloading cache from Cloudflare R2 in parallel..."
         cd openwrt || { echo "❌ openwrt directory not found"; exit 1; }
 
         fetch_and_extract() {
@@ -138,10 +137,14 @@ jobs:
           fi
         }
 
-        fetch_and_extract ccache
-        fetch_and_extract dl
-        fetch_and_extract staging_dir
-        fetch_and_extract build_dir
+        fetch_and_extract ccache &
+        fetch_and_extract dl &
+        fetch_and_extract staging_dir &
+        fetch_and_extract build_dir &
+
+        wait
+
+        echo "✅ All cache downloads from R2 completed."
 
     - name: Load custom feeds
       run: |
