@@ -1,9 +1,9 @@
 #
-# This workflow builds ImmortalWrt firmware using the official Image Builder.
+# This workflow builds ImmortalWrt firmware using the official Image Builder.
 # It determines the latest release tag from the ImmortalWrt repository based on
 # the configured BUILD_VER prefix (e.g. 24.10) and then downloads the matching
-# Image Builder tarball for the x86/64 target.  The workflow parses the
-# provided .config to generate a package list and uses the Image Builder to
+# Image Builder tarball for the x86/64 target.  The workflow parses the
+# provided .config to generate a package list and uses the Image Builder to
 # assemble a custom firmware image without compiling the entire source tree.
 # This reduces build time and CPU usage significantly compared to a full
 # toolchain build.
@@ -28,7 +28,7 @@ env:
   UPLOAD_RELEASE: true
   # Use the Asia/Shanghai timezone by default; adjust as necessary.
   TZ: Asia/Shanghai
-  # Target architecture for Image Builder.  We build x86/64 firmware here.
+  # Target architecture for Image Builder.  We build x86/64 firmware here.
   TARGET_ARCH: "x86/64"
 
 jobs:
@@ -44,11 +44,22 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           sudo apt-get update -qq
-          # Install only the tools needed for image builder: git, curl, wget,
-          # make, tar, and zstd.  We do not install the full toolchain used
-          # for compiling the kernel and packages because the Image Builder
-          # includes prebuilt binaries.
-          sudo apt-get install -y git curl wget make tar zstd python3
+          # Install the base tools needed for the workflow.  While using the
+          # Image Builder avoids compiling the entire toolchain, OpenWrt's
+          # kconfig infrastructure still requires a working C compiler and
+          # associated utilities to build host tools such as 'conf'.  Without
+          # these packages, 'make defconfig' will fail (exit code 2).  We
+          # therefore install build-essential and a few additional packages
+          # commonly required by OpenWrt's build scripts.
+          sudo apt-get install -y \
+            build-essential \
+            gawk \
+            flex \
+            bison \
+            gettext \
+            libncurses5-dev \
+            git curl wget make tar zstd python3 \
+            python3-distutils
           # Set timezone for reproducible builds
           sudo timedatectl set-timezone "$TZ"
           # Prepare the working directory and adjust permissions
@@ -180,21 +191,21 @@ jobs:
           BUILD_DATE=$(date +"%Y.%m.%d")
           # Persist release tag for later steps and release creation
           echo "RELEASE_TAG=${REPO_TAG}-${BUILD_DATE}" >> $GITHUB_ENV
-          # Create or update the overlay version file.  When using the Image Builder,
+          # Create or update the overlay version file.  When using the Image Builder,
           # files placed under the 'files' directory are injected into the root
           # filesystem.  Store the DISTRIB_GITHUBVER in etc/openwrt_release so
           # the firmware identifies itself with the tag and build date.
           mkdir -p files/etc
           echo "DISTRIB_GITHUBVER='${REPO_TAG}-${BUILD_DATE}'" > files/etc/openwrt_release
 
-      - name: Download and extract Image Builder
+      - name: Download and extract Image Builder
         working-directory: /workdir
         run: |
           set -eo pipefail
           RELEASE_VERSION="${REPO_TAG#v}"
           IB_FILE="immortalwrt-imagebuilder-${RELEASE_VERSION}-x86-64.Linux-x86_64.tar.zst"
           DOWNLOAD_URL="https://downloads.immortalwrt.org/releases/${RELEASE_VERSION}/targets/x86/64/${IB_FILE}"
-          echo "Downloading Image Builder from $DOWNLOAD_URL"
+          echo "Downloading Image Builder from $DOWNLOAD_URL"
           curl -L --fail -o "$IB_FILE" "$DOWNLOAD_URL"
           # Extract using zstd compression support.  The tar file unpacks to a
           # directory named after the archive without the .tar.zst extension.
@@ -203,11 +214,11 @@ jobs:
           # archive without extension; move it to a generic name for ease of use.
           mv "immortalwrt-imagebuilder-${RELEASE_VERSION}-x86-64.Linux-x86_64" imagebuilder
 
-      - name: Build firmware using Image Builder
+      - name: Build firmware using Image Builder
         working-directory: /workdir/imagebuilder
         run: |
           set -eo pipefail
-          # Copy overlay files into the Image Builder.  The 'files' directory
+          # Copy overlay files into the Image Builder.  The 'files' directory
           # will be merged into the root filesystem when building the image.  Use the
           # overlay prepared in /workdir/openwrt/files to include any generated version file.
           [ -d "/workdir/openwrt/files" ] && cp -r "/workdir/openwrt/files" ./files || true
@@ -232,7 +243,7 @@ jobs:
         id: organize
         if: env.UPLOAD_FIRMWARE == 'true' && env.COMPILE_STATUS == 'success'
         run: |
-          # For Image Builder, images are stored under bin/targets/<target>/<subtarget>
+          # For Image Builder, images are stored under bin/targets/<target>/<subtarget>
           cd /workdir/imagebuilder/bin/targets/x86/64
           echo "Firmware directory contents:"
           ls -l
@@ -258,7 +269,7 @@ jobs:
         with:
           tag_name: ${{ env.RELEASE_TAG }}
           files: ${{ env.FIRMWARE }}/*
-          body: 'Automated build using Image Builder.'
+          body: 'Automated build using Image Builder.'
 
       - name: Delete old workflow runs
         uses: Mattraks/delete-workflow-runs@main
