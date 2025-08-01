@@ -83,7 +83,6 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: 'x86_64'
         prefix: ${{ github.workspace }}/openwrt
         clean: ${{ github.event.inputs.clean_cache }}
 
