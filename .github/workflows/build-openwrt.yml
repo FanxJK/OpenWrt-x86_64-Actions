@@ -124,7 +124,7 @@ jobs:
       run: |
         echo "Downloading cache from Cloudflare R2..."
         # Download ccache
-        rclone copy r2:openwrt/ccache ~/.cache/ccache --progress || echo "No ccache found, starting fresh"
+        rclone copy r2:openwrt/ccache openwrt/.ccache --progress || echo "No ccache found, starting fresh"
         # Download dl cache (source packages)
         rclone copy r2:openwrt/dl openwrt/dl --progress || echo "No dl cache found"
         # Download staging_dir (toolchain)
@@ -219,13 +219,13 @@ jobs:
       run: |
         echo "Uploading cache to Cloudflare R2..."
 
+        cd openwrt
         # Upload ccache
         if [ -d ~/.cache/ccache ]; then
           echo "Uploading ccache..."
-          rclone copy ~/.cache/ccache r2:openwrt/ccache --progress
+          rclone .ccache r2:openwrt/ccache --progress
         fi
 
-        cd openwrt
         # Upload dl cache (source packages)
         if [ -d "dl" ]; then
           echo "Uploading dl cache..."
