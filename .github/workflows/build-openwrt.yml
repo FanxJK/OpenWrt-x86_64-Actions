@@ -158,7 +158,7 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         export FORCE_UNSAFE_CONFIGURE=1
-        make -j$(($(nproc) + 1)) V=w || make -j$(nproc) V=s || make -j1 V=s
+        make -j$(($(nproc) + 1)) || make -j$(nproc) V=s || make -j1 V=s
         echo "COMPILE_STATUS=success" >> $GITHUB_ENV
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
