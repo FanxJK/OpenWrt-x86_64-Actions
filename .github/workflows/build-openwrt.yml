@@ -17,10 +17,18 @@ on:
       clean_cache:
         description: 'Clean Cache'
         required: false
+        type: choice
+        options:
+          - "false"
+          - "true"
         default: "false"
       upload_release:
         description: 'Upload Release'
         required: false
+        type: choice
+        options:
+          - "true"
+          - "false"
         default: "true"
 
 env:
