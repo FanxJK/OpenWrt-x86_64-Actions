@@ -89,7 +89,7 @@ jobs:
 
     - name: Setup ccache
       run: |
-        ccache --set-config=max_size=2G
+        ccache --set-config=max_size=6G
         ccache --set-config=compression=true
         ccache --set-config=compression_level=6
 
