@@ -89,7 +89,6 @@ jobs:
 
     - name: Setup ccache
       run: |
-        # 优化 ccache 配置
         ccache --set-config=max_size=2G
         ccache --set-config=compression=true
         ccache --set-config=compression_level=6
@@ -158,9 +157,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        # 设置编译优化环境变量
         export FORCE_UNSAFE_CONFIGURE=1
-        # 使用更激进的并行编译，失败时逐步降级
         make -j$(($(nproc) + 1)) V=w || make -j$(nproc) V=s || make -j1 V=s
         echo "COMPILE_STATUS=success" >> $GITHUB_ENV
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
