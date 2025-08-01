@@ -223,7 +223,7 @@ jobs:
         # Upload ccache
         if [ -d ~/.cache/ccache ]; then
           echo "Uploading ccache..."
-          rclone .ccache r2:openwrt/ccache --progress
+          rclone copy .ccache r2:openwrt/ccache --progress
         fi
 
         # Upload dl cache (source packages)
