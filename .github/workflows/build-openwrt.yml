@@ -8,16 +8,11 @@
 # This reduces build time and CPU usage significantly compared to a full
 # toolchain build.
 
-name: Build ImmortalWrt with Image Builder
+name: Build OpenWrt
 
 on:
   repository_dispatch:
   workflow_dispatch:
-    inputs:
-      clean_cache:
-        description: 'Clean cache (not used when using Image Builder)'
-        required: false
-        default: "false"
 
 env:
   # Upstream repository and version prefix.  BUILD_VER is used to
@@ -53,7 +48,7 @@ jobs:
           # make, tar, and zstd.  We do not install the full toolchain used
           # for compiling the kernel and packages because the Image Builder
           # includes prebuilt binaries.
-          sudo apt-get install -y git curl wget make tar zstd
+          sudo apt-get install -y git curl wget make tar zstd python3
           # Set timezone for reproducible builds
           sudo timedatectl set-timezone "$TZ"
           # Prepare the working directory and adjust permissions
@@ -62,61 +57,135 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Clone ImmortalWrt source and generate config
+      # Step 1: determine the latest tag matching BUILD_VER.  Use a
+      # personal access token if available to avoid rate limits.  Store
+      # the result in the GitHub Actions environment.
+      - name: Determine latest release tag
         working-directory: /workdir
+        # Use a personal access token if provided to avoid hitting the GitHub API
+        # unauthenticated rate limits.  Do not override GITHUB_TOKEN used by
+        # the release step; instead use API_TOKEN for the API call.
+        env:
+          API_TOKEN: ${{ secrets.MY_SECRETS_TOKEN }}
         run: |
           set -eo pipefail
-          # Determine the latest tag matching BUILD_VER (e.g. v24.10.2)
-          REPO_URL="https://github.com/${REPO_NAME}.git"
-          REPO_TAG=$(curl -s https://api.github.com/repos/${REPO_NAME}/tags \
-            | grep -oP '"name":\s*"\K[^\"]+' \
+          echo "Fetching tags from ${REPO_NAME} matching ${BUILD_VER}"
+          # Request the list of tags and filter by BUILD_VER.  We expect tags
+          # like v24.10.2; removing the 'v' happens later when downloading
+          # the image builder.  Authentication prevents API rate limiting.
+          REPO_TAG=$(curl -H "Authorization: Bearer ${API_TOKEN}" -sX GET \
+            "https://api.github.com/repos/${REPO_NAME}/tags" \
+            | awk -F'"' '/"name":/ {print $4}' \
             | grep "${BUILD_VER}" \
             | head -n 1)
           if [ -z "$REPO_TAG" ]; then
-            echo "Failed to determine REPO_TAG from remote repository" >&2
+            echo "No tag matching ${BUILD_VER} found" >&2
             exit 1
           fi
-          echo "Using repository tag: $REPO_TAG"
+          echo "Found tag: $REPO_TAG"
           echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
-          # Clone only the selected tag.  Depth 1 reduces clone time and size.
+
+      # Step 2: clone the selected ImmortalWrt tag.  Keep depth 1 to reduce
+      # download size.  Symbolically link the source into the workspace.
+      - name: Clone source code
+        working-directory: /workdir
+        run: |
+          set -eo pipefail
+          REPO_URL="https://github.com/${REPO_NAME}.git"
           git clone --depth=1 --branch "$REPO_TAG" "$REPO_URL" openwrt
-          # Link the checked out source into the workspace to reuse existing
-          # scripts, configuration files and overlay directories.
           ln -sf /workdir/openwrt "$GITHUB_WORKSPACE/openwrt"
-          # Replace feeds configuration if provided in the root of the repo.
-          [ -e "$GITHUB_WORKSPACE/$FEEDS_CONF" ] && mv "$GITHUB_WORKSPACE/$FEEDS_CONF" openwrt/feeds.conf.default || true
-          # Execute user-defined pre-feed scripts (DIY part 1) if present.
-          chmod +x "$GITHUB_WORKSPACE/$DIY_P1_SH"
-          (cd openwrt && "$GITHUB_WORKSPACE/$DIY_P1_SH")
-          # Update and install all feeds; this is required so that defconfig can
-          # find all selectable packages when generating the final .config.
-          (cd openwrt && ./scripts/feeds update -a)
-          (cd openwrt && ./scripts/feeds install -a)
-          # Copy overlay files and user configuration (.config) if present.
-          [ -d "$GITHUB_WORKSPACE/files" ] && cp -r "$GITHUB_WORKSPACE/files" openwrt/files || true
-          [ -e "$GITHUB_WORKSPACE/$CONFIG_FILE" ] && cp "$GITHUB_WORKSPACE/$CONFIG_FILE" openwrt/.config || true
-          # Execute user-defined post-feed scripts (DIY part 2) if present.
-          chmod +x "$GITHUB_WORKSPACE/$DIY_P2_SH"
-          (cd openwrt && "$GITHUB_WORKSPACE/$DIY_P2_SH")
-          # Normalize the configuration.  make defconfig expands and
-          # completes all option dependencies according to feeds and defaults.
-          (cd openwrt && make defconfig)
-          # Extract the list of explicitly enabled packages from the .config.
-          # Image Builder accepts a whitespace-separated list of packages.
-          PACKAGE_LIST=$(grep '^CONFIG_PACKAGE_' openwrt/.config \
-            | grep '=y' \
+
+      # Step 3: replace feeds.conf, run DIY part1 and update feeds
+      # Step 3a: replace feeds configuration and run DIY part1
+      - name: Replace feeds config and run DIY part1
+        working-directory: /workdir/openwrt
+        run: |
+          set -eo pipefail
+          # Replace feeds.conf.default if a custom feeds config exists in the root of the repository
+          if [ -e "$GITHUB_WORKSPACE/$FEEDS_CONF" ]; then
+            echo "Replacing feeds.conf.default with $FEEDS_CONF"
+            mv "$GITHUB_WORKSPACE/$FEEDS_CONF" ./feeds.conf.default
+          fi
+          # Execute diy-part1.sh if present; ignore errors so the build does not fail prematurely
+          if [ -f "$GITHUB_WORKSPACE/$DIY_P1_SH" ]; then
+            echo "Executing DIY part1 script"
+            chmod +x "$GITHUB_WORKSPACE/$DIY_P1_SH"
+            "$GITHUB_WORKSPACE/$DIY_P1_SH" || true
+          fi
+
+      # Step 3b: update and install feeds
+      - name: Update and install feeds
+        working-directory: /workdir/openwrt
+        run: |
+          set -eo pipefail
+          echo "Updating all feeds"
+          ./scripts/feeds update -a
+          echo "Installing feeds (pass 1)"
+          ./scripts/feeds install -a
+          echo "Installing feeds (pass 2)"
+          ./scripts/feeds install -a
+
+      # Step 4a: copy custom files and configuration
+      - name: Copy custom files and configuration
+        working-directory: /workdir/openwrt
+        run: |
+          set -eo pipefail
+          # Copy overlay files (the 'files' directory) if it exists in the repository
+          if [ -d "$GITHUB_WORKSPACE/files" ]; then
+            echo "Copying custom overlay files"
+            cp -r "$GITHUB_WORKSPACE/files" ./files
+          fi
+          # Copy the provided .config if present to override default config
+          if [ -e "$GITHUB_WORKSPACE/$CONFIG_FILE" ]; then
+            echo "Using custom .config"
+            cp "$GITHUB_WORKSPACE/$CONFIG_FILE" ./.config
+          fi
+
+      # Step 4b: run DIY part2 script
+      - name: Run DIY part2 script
+        working-directory: /workdir/openwrt
+        run: |
+          set -eo pipefail
+          if [ -f "$GITHUB_WORKSPACE/$DIY_P2_SH" ]; then
+            echo "Executing DIY part2 script"
+            chmod +x "$GITHUB_WORKSPACE/$DIY_P2_SH"
+            "$GITHUB_WORKSPACE/$DIY_P2_SH" || true
+          fi
+
+      # Step 4c: normalize configuration (defconfig)
+      - name: Run defconfig
+        working-directory: /workdir/openwrt
+        run: |
+          set -eo pipefail
+          echo "Running make defconfig"
+          make defconfig
+
+      # Step 4d: generate package list from .config
+      - name: Generate package list
+        working-directory: /workdir/openwrt
+        run: |
+          set -eo pipefail
+          echo "Extracting package list from .config"
+          PACKAGE_LIST=$(grep '^CONFIG_PACKAGE_' .config | grep '=y' \
             | sed -e 's/CONFIG_PACKAGE_//' -e 's/=y//' \
-            | tr '\n' ' ' | sed -e 's/\s\{1,\}/ /g')
+            | tr '\n' ' ' | sed -e 's/[[:space:]]\{1,\}/ /g')
           echo "PACKAGE_LIST=${PACKAGE_LIST}" >> $GITHUB_ENV
-          echo "Detected packages: ${PACKAGE_LIST}"
-          # Build release tag for uploads and releases.  We append the current
-          # date to the tag to avoid collisions when multiple builds occur.
+          echo "Generated package list: ${PACKAGE_LIST}"
+
+      # Step 5: set release tag and write version information for the firmware
+      - name: Set release tag and prepare version file
+        working-directory: /workdir/openwrt
+        run: |
+          set -eo pipefail
           BUILD_DATE=$(date +"%Y.%m.%d")
+          # Persist release tag for later steps and release creation
           echo "RELEASE_TAG=${REPO_TAG}-${BUILD_DATE}" >> $GITHUB_ENV
-          # Write distribution version into base-files if present, so that
-          # firmware identifies itself with the GitHub tag.
-          echo "DISTRIB_GITHUBVER='${REPO_TAG}-${BUILD_DATE}'" >> openwrt/package/base-files/files/etc/openwrt_release || true
+          # Create or update the overlay version file.  When using the Image Builder,
+          # files placed under the 'files' directory are injected into the root
+          # filesystem.  Store the DISTRIB_GITHUBVER in etc/openwrt_release so
+          # the firmware identifies itself with the tag and build date.
+          mkdir -p files/etc
+          echo "DISTRIB_GITHUBVER='${REPO_TAG}-${BUILD_DATE}'" > files/etc/openwrt_release
 
       - name: Download and extract Image Builder
         working-directory: /workdir
@@ -139,8 +208,9 @@ jobs:
         run: |
           set -eo pipefail
           # Copy overlay files into the Image Builder.  The 'files' directory
-          # will be merged into the root filesystem when building the image.
-          [ -d "$GITHUB_WORKSPACE/files" ] && cp -r "$GITHUB_WORKSPACE/files" ./files || true
+          # will be merged into the root filesystem when building the image.  Use the
+          # overlay prepared in /workdir/openwrt/files to include any generated version file.
+          [ -d "/workdir/openwrt/files" ] && cp -r "/workdir/openwrt/files" ./files || true
           # Display available profiles for reference.  This helps verify
           # that the expected profile (generic) exists.  Not fatal if omitted.
           make info
