@@ -116,35 +116,32 @@ jobs:
         echo "✅ R2 cache cleanup completed."
 
 
-    - name: Upload cache to R2
-      if: (!cancelled())
+    - name: Download cache from R2
+      if: ${{ github.event.inputs.clean_cache != 'true' }}
       run: |
         set -Eeuo pipefail
-        echo "Uploading cache to Cloudflare R2 in parallel..."
-        cd openwrt || { echo "❌ 'openwrt' directory not found"; exit 1; }
+        echo "Downloading cache from Cloudflare R2..."
+        cd openwrt || { echo "❌ openwrt directory not found"; exit 1; }
 
-        compress_and_upload() {
-          local dir="$1"
-          local archive="${dir}.tar.zst"
+        fetch_and_extract() {
+          local name="$1"
+          local file="${name}.tar.zst"
+          local remote="r2:openwrt/${file}"
 
-          if [ -d "$dir" ]; then
-            echo "📦 Compressing ${dir}..."
-            tar --zstd -cf "$archive" "$dir"
-            echo "⬆️ Uploading ${archive} to R2..."
-            rclone copyto "$archive" "r2:openwrt/${archive}" --progress --transfers=4 && rm -f "$archive" &
+          echo "→ Attempting to restore cache: ${file}"
+          if rclone copyto "$remote" "$file" --progress --retries 3 --low-level-retries 3 2>/dev/null; then
+            echo "✔ Download complete, extracting ${file}..."
+            tar --zstd -xf "$file"
+            rm -f "$file"
           else
-            echo "ℹ️ Skipping ${dir}: directory not found"
+            echo "ℹ️ No ${name} cache found"
           fi
         }
 
-        compress_and_upload .ccache
-        compress_and_upload dl
-        compress_and_upload staging_dir
-        compress_and_upload build_dir
-
-        wait
-
-        echo "✅ All cache uploads to R2 completed."
+        fetch_and_extract ccache
+        fetch_and_extract dl
+        fetch_and_extract staging_dir
+        fetch_and_extract build_dir
 
     - name: Load custom feeds
       run: |
