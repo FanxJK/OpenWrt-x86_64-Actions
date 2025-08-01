@@ -18,6 +18,10 @@ on:
         description: 'Clean Cache'
         required: false
         default: "false"
+      upload_release:
+        description: 'Upload Release'
+        required: false
+        default: "true"
 
 env:
   REPO_NAME: immortalwrt/immortalwrt
@@ -28,7 +32,7 @@ env:
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  UPLOAD_RELEASE: true
+  UPLOAD_RELEASE: ${{ github.event.inputs.upload_release }}
   TZ: Asia/Shanghai
 
 jobs:
