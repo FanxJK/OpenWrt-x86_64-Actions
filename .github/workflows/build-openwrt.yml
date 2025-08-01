@@ -120,37 +120,49 @@ jobs:
         cd openwrt
         
         # Download and extract ccache
-        if rclone copy r2:openwrt/ccache.tar.zst . --progress; then
-          echo "Extracting ccache..."
-          tar --zstd -xf ccache.tar.zst
-          rm ccache.tar.zst
+        if rclone ls r2:openwrt/ccache.tar.zst 2>/dev/null; then
+          echo "Downloading ccache..."
+          rclone copy r2:openwrt/ccache.tar.zst . --progress
+          if [ -f ccache.tar.zst ]; then
+            echo "Extracting ccache..."
+            tar --zstd -xf ccache.tar.zst && rm ccache.tar.zst
+          fi
         else
-          echo "No ccache found"
+          echo "No ccache found, starting fresh"
         fi
         
         # Download and extract dl cache
-        if rclone copy r2:openwrt/dl.tar.zst . --progress; then
-          echo "Extracting dl cache..."
-          tar --zstd -xf dl.tar.zst
-          rm dl.tar.zst
+        if rclone ls r2:openwrt/dl.tar.zst 2>/dev/null; then
+          echo "Downloading dl cache..."
+          rclone copy r2:openwrt/dl.tar.zst . --progress
+          if [ -f dl.tar.zst ]; then
+            echo "Extracting dl cache..."
+            tar --zstd -xf dl.tar.zst && rm dl.tar.zst
+          fi
         else
           echo "No dl cache found"
         fi
         
         # Download and extract staging_dir
-        if rclone copy r2:openwrt/staging_dir.tar.zst . --progress; then
-          echo "Extracting staging_dir cache..."
-          tar --zstd -xf staging_dir.tar.zst
-          rm staging_dir.tar.zst
+        if rclone ls r2:openwrt/staging_dir.tar.zst 2>/dev/null; then
+          echo "Downloading staging_dir cache..."
+          rclone copy r2:openwrt/staging_dir.tar.zst . --progress
+          if [ -f staging_dir.tar.zst ]; then
+            echo "Extracting staging_dir cache..."
+            tar --zstd -xf staging_dir.tar.zst && rm staging_dir.tar.zst
+          fi
         else
           echo "No staging_dir cache found"
         fi
         
         # Download and extract build_dir
-        if rclone copy r2:openwrt/build_dir.tar.zst . --progress; then
-          echo "Extracting build_dir cache..."
-          tar --zstd -xf build_dir.tar.zst
-          rm build_dir.tar.zst
+        if rclone ls r2:openwrt/build_dir.tar.zst 2>/dev/null; then
+          echo "Downloading build_dir cache..."
+          rclone copy r2:openwrt/build_dir.tar.zst . --progress
+          if [ -f build_dir.tar.zst ]; then
+            echo "Extracting build_dir cache..."
+            tar --zstd -xf build_dir.tar.zst && rm build_dir.tar.zst
+          fi
         else
           echo "No build_dir cache found"
         fi
