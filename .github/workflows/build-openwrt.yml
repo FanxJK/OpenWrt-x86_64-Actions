@@ -68,8 +68,8 @@ jobs:
           libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 \
           libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lld llvm lrzsz mkisofs msmtp \
           nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip python3-ply \
-          python3-docutils python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig \
-          texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          python3-docutils python3-pyelftools qemu-utils rclone re2c rsync scons squashfs-tools subversion swig \
+          texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
@@ -93,12 +93,6 @@ jobs:
 
     - name: Setup rclone for R2
       run: |
-        curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
-        unzip rclone-current-linux-amd64.zip
-        sudo mv rclone-*-linux-amd64/rclone /usr/local/bin/
-        sudo chmod +x /usr/local/bin/rclone
-
-        # Configure rclone for Cloudflare R2
         mkdir -p ~/.config/rclone
         cat > ~/.config/rclone/rclone.conf << EOF
         [r2]
@@ -113,24 +107,53 @@ jobs:
       if: ${{ github.event.inputs.clean_cache == 'true' }}
       run: |
         echo "Cleaning R2 cache..."
-        rclone delete r2:openwrt/ccache --progress || echo "No ccache to clean"
-        rclone delete r2:openwrt/dl --progress || echo "No dl cache to clean"
-        rclone delete r2:openwrt/staging_dir --progress || echo "No staging_dir cache to clean"
-        rclone delete r2:openwrt/build_dir --progress || echo "No build_dir cache to clean"
+        rclone delete r2:openwrt/ccache.tar.zst --progress || echo "No ccache to clean"
+        rclone delete r2:openwrt/dl.tar.zst --progress || echo "No dl cache to clean"
+        rclone delete r2:openwrt/staging_dir.tar.zst --progress || echo "No staging_dir cache to clean"
+        rclone delete r2:openwrt/build_dir.tar.zst --progress || echo "No build_dir cache to clean"
         echo "R2 cache cleaned!"
 
     - name: Download cache from R2
       if: ${{ github.event.inputs.clean_cache != 'true' }}
       run: |
         echo "Downloading cache from Cloudflare R2..."
-        # Download ccache
-        rclone copy r2:openwrt/ccache openwrt/.ccache --progress || echo "No ccache found, starting fresh"
-        # Download dl cache (source packages)
-        rclone copy r2:openwrt/dl openwrt/dl --progress || echo "No dl cache found"
-        # Download staging_dir (toolchain)
-        rclone copy r2:openwrt/staging_dir openwrt/staging_dir --progress || echo "No staging_dir cache found"
-        # Download build_dir (build states)
-        rclone copy r2:openwrt/build_dir openwrt/build_dir --progress || echo "No build_dir cache found"
+        cd openwrt
+        
+        # Download and extract ccache
+        if rclone copy r2:openwrt/ccache.tar.zst . --progress; then
+          echo "Extracting ccache..."
+          tar --zstd -xf ccache.tar.zst
+          rm ccache.tar.zst
+        else
+          echo "No ccache found"
+        fi
+        
+        # Download and extract dl cache
+        if rclone copy r2:openwrt/dl.tar.zst . --progress; then
+          echo "Extracting dl cache..."
+          tar --zstd -xf dl.tar.zst
+          rm dl.tar.zst
+        else
+          echo "No dl cache found"
+        fi
+        
+        # Download and extract staging_dir
+        if rclone copy r2:openwrt/staging_dir.tar.zst . --progress; then
+          echo "Extracting staging_dir cache..."
+          tar --zstd -xf staging_dir.tar.zst
+          rm staging_dir.tar.zst
+        else
+          echo "No staging_dir cache found"
+        fi
+        
+        # Download and extract build_dir
+        if rclone copy r2:openwrt/build_dir.tar.zst . --progress; then
+          echo "Extracting build_dir cache..."
+          tar --zstd -xf build_dir.tar.zst
+          rm build_dir.tar.zst
+        else
+          echo "No build_dir cache found"
+        fi
 
     - name: Load custom feeds
       run: |
@@ -206,32 +229,40 @@ jobs:
       if: (!cancelled())
       run: |
         echo "Uploading cache to Cloudflare R2..."
-
         cd openwrt
-        # Upload ccache
-        if [ -d ".cache" ]; then
-          echo "Uploading ccache..."
-          rclone copy .ccache r2:openwrt/ccache --progress
+        
+        # Compress and upload ccache
+        if [ -d ".ccache" ]; then
+          echo "Compressing and uploading ccache..."
+          tar --zstd -cf ccache.tar.zst .ccache
+          rclone copy ccache.tar.zst r2:openwrt/ --progress
+          rm ccache.tar.zst
         fi
-
-        # Upload dl cache (source packages)
+        
+        # Compress and upload dl cache
         if [ -d "dl" ]; then
-          echo "Uploading dl cache..."
-          rclone copy dl r2:openwrt/dl --progress
+          echo "Compressing and uploading dl cache..."
+          tar --zstd -cf dl.tar.zst dl
+          rclone copy dl.tar.zst r2:openwrt/ --progress
+          rm dl.tar.zst
         fi
-
-        # Upload staging_dir (toolchain)
+        
+        # Compress and upload staging_dir
         if [ -d "staging_dir" ]; then
-          echo "Uploading staging_dir cache..."
-          rclone copy staging_dir r2:openwrt/staging_dir --progress
+          echo "Compressing and uploading staging_dir cache..."
+          tar --zstd -cf staging_dir.tar.zst staging_dir
+          rclone copy staging_dir.tar.zst r2:openwrt/ --progress
+          rm staging_dir.tar.zst
         fi
-
-        # Upload build_dir (build states)
+        
+        # Compress and upload build_dir
         if [ -d "build_dir" ]; then
-          echo "Uploading build_dir cache..."
-          rclone copy build_dir r2:openwrt/build_dir --progress
+          echo "Compressing and uploading build_dir cache..."
+          tar --zstd -cf build_dir.tar.zst build_dir
+          rclone copy build_dir.tar.zst r2:openwrt/ --progress
+          rm build_dir.tar.zst
         fi
-
+        
         echo "Cache upload completed!"
 
     - name: Check space usage
