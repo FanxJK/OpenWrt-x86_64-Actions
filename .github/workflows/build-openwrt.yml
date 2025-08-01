@@ -39,30 +39,25 @@ jobs:
       contents: write
 
     steps:
-      - name: Set up build environment
+      - name: Initialization environment
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get update -qq
-          # Install the base tools needed for the workflow.  While using the
-          # Image Builder avoids compiling the entire toolchain, OpenWrt's
-          # kconfig infrastructure still requires a working C compiler and
-          # associated utilities to build host tools such as 'conf'.  Without
-          # these packages, 'make defconfig' will fail (exit code 2).  We
-          # therefore install build-essential and a few additional packages
-          # commonly required by OpenWrt's build scripts.
-          sudo apt-get install -y \
-            build-essential \
-            gawk \
-            flex \
-            bison \
-            gettext \
-            libncurses5-dev \
-            git curl wget make tar zstd python3 \
-            python3-distutils
-          # Set timezone for reproducible builds
+          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /etc/mysql /etc/php /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/share/boost /usr/local/graalvm /usr/local/share/powershell /usr/local/share/chromium
+          sudo rm -rf /usr/local/lib/node_modules /opt/az /opt/microsoft /usr/share/swift
+          sudo docker image prune --all --force
+          sudo apt-get clean
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+            bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib \
+            g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-dev-i386 libelf-dev \
+            libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 \
+            libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lld llvm lrzsz mkisofs msmtp \
+            nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip python3-ply \
+            python3-docutils python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig \
+            texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
           sudo timedatectl set-timezone "$TZ"
-          # Prepare the working directory and adjust permissions
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
 
