@@ -20,3 +20,10 @@ curl https://raw.githubusercontent.com/immortalwrt/immortalwrt/openwrt-24.10/fee
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 echo 'src-git fanx https://github.com/FanxJK/openwrt-packages' >> feeds.conf.default
+
+# luci-app-easytier
+git clone https://github.com/EasyTier/luci-app-easytier.git --depth=1 --single-branch package/luci-app-easytier
+
+# luci-app-netspeedtest
+rm -rf ./feeds/packages/net/speedtest-cli
+git clone https://github.com/sirpdboy/luci-app-netspeedtest.git --depth=1 --single-branch package/netspeedtest
