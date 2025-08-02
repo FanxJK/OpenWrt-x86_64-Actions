@@ -227,10 +227,11 @@ jobs:
 
         compress_and_upload() {
           local dir="$1"
-          local archive="${dir}.tar.zst"
+          local name="${2:-$dir}"
+          local archive="${name}.tar.zst"
 
           if [ -d "$dir" ]; then
-            echo "📦 Compressing ${dir}..."
+            echo "📦 Compressing ${dir} -> ${archive}..."
             tar --zstd -cf "$archive" "$dir"
             echo "⬆️ Uploading ${archive} to R2..."
             rclone copy "$archive" r2:openwrt-build/ --progress --transfers=4 && rm -f "$archive" &
@@ -239,7 +240,7 @@ jobs:
           fi
         }
 
-        compress_and_upload .ccache
+        compress_and_upload .ccache ccache
         compress_and_upload dl
         compress_and_upload staging_dir
         compress_and_upload build_dir
