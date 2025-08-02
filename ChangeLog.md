@@ -1,3 +1,6 @@
+# 2025-08-02
+- 新增 `luci-app-netspeedtest`
+
 # 2025-07-30
 - 新增 `luci-app-fakesip`
 
