@@ -97,6 +97,7 @@ jobs:
         unzip rclone-current-linux-amd64.zip
         sudo mv rclone-*-linux-amd64/rclone /usr/local/bin/
         sudo chmod +x /usr/local/bin/rclone
+        rm -rf rclone-*-linux-amd64 rclone-current-linux-amd64.zip
 
         # Configure rclone for Cloudflare R2
         mkdir -p ~/.config/rclone
