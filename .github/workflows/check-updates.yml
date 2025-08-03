@@ -46,6 +46,7 @@ jobs:
           echo "HAS_UPDATE=true" >> $GITHUB_ENV
         else
           echo "No Updates"
+          echo "HAS_UPDATE=false" >> $GITHUB_ENV
         fi
 
     - name: Trigger build
@@ -59,6 +60,16 @@ jobs:
             "clean_cache": "true",
             "upload_release": "true"
           }
+
+    - name: Setup workspace for cache
+      if: ${{ env.HAS_UPDATE == 'false' }}
+      run: |
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        REPO_URL="https://github.com/$REPO_NAME.git"
+        REPO_TAG=${{ env.REPO_TAG }}
+        git clone $REPO_URL -b $REPO_TAG --depth=1 --single-branch /workdir/openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Keep cache alive
       if: ${{ env.HAS_UPDATE == 'false' }}
