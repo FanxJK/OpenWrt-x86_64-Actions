@@ -9,7 +9,7 @@
 - 更新 ImmortalWrt 版本到 24.10.2
 
 # 2025-06-10
-- 新增 `FakeHTTP`
+- 新增 `luci-app-fakehttp`
 
 # 2025-05-22
 - 更新 ImmortalWrt 版本到 24.10.1
