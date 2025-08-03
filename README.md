@@ -1,6 +1,6 @@
 # 自用测试固件，请勿下载
 
-基于 ImmortalWrt 源码的自用项目，每周自动编译和构建。  
+基于 ImmortalWrt 源码的自用项目
 基于 [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt) 修改，去除已弃用或即将弃用的库和环境并解决 Actions WARNING 问题  
 感谢 [P3TERX](https://github.com/P3TERX) 与 [ImmortalWrt](https://github.com/immortalwrt)
 
