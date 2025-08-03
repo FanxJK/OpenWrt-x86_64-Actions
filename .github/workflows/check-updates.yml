@@ -59,7 +59,15 @@ jobs:
             "clean_cache": "true",
             "upload_release": "true"
           }
-        
+
+    - name: Keep cache alive
+      if: ${{ env.HAS_UPDATE == 'false' }}
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: ${{ github.workspace }}/openwrt
+        clean: 'false'
+
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
       with:
