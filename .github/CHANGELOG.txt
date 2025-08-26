@@ -1,3 +1,5 @@
+- 更新 ImmortalWrt 至 v23.05.5
+- 更新 UU 加速器版本
 - 新增 luci-app-cloudflared
 - 新增 luci-app-fakesip
 - 新增 luci-app-netspeedtest
