@@ -1,4 +1,3 @@
-- 更新 ImmortalWrt 至 v23.05.5
 - 更新 UU 加速器版本
 - 新增 luci-app-cloudflared
 - 新增 luci-app-fakesip
@@ -10,3 +9,4 @@
 * 防火墙设置 "路由/NAT 卸载" 建议设置为: 软件流量卸载 以开启 Flow Offloading
 * 修复 SmartDNS 依赖: libopenssl3 崩溃问题， SmartDNS 测速模式可选择: tcp:443,tcp:80,ping 以提升速度
 !!! 修改完成后建议重启 !!!
+
