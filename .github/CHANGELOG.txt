@@ -1,4 +1,5 @@
 本次更新:
+- 更新 ImmortalWrt 到 24.10.3
 - 更新 UU 加速器版本
 - 更新 OpenClash 版本
 - 更新 EasyTier 版本

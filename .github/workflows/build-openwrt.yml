@@ -40,7 +40,8 @@ env:
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  UPLOAD_RELEASE: ${{ github.event.inputs.upload_release }}
+  UPLOAD_RELEASE: ${{ github.event.client_payload.upload_release || github.event.inputs.upload_release }}
+  CLEAN_CACHE: ${{ github.event.client_payload.clean_cache || github.event.inputs.clean_cache }}
   TZ: Asia/Shanghai
 
 jobs:
@@ -96,7 +97,7 @@ jobs:
       with:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
-        clean: ${{ github.event.inputs.clean_cache }}
+        clean: ${{ env.CLEAN_CACHE }}
 
     - name: Load custom feeds
       run: |
