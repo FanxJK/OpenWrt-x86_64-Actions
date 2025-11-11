@@ -1,3 +1,6 @@
+# 2025-11-12
+- 新增 `SmartDNS Dashboard`
+
 # 2025-08-02
 - 新增 `luci-app-netspeedtest`
 
