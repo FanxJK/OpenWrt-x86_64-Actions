@@ -1,19 +1,31 @@
-本次更新:
-- 新增 SmartDNS Dashboard 默认密码: admin/password
+本次更新
+========
+- 新增 SmartDNS Dashboard 默认账号：admin / password
 - 解决 SmartDNS 在 nftables 下的性能问题
 - 更新 SmartDNS 版本
-- 更新 UU 加速器 版本
+- 更新 UU 加速器版本
 - 更新 OpenClash 版本
 
-近期更新:
+近期更新
+========
 - 更新 ImmortalWrt 到 24.10.4
 - 新增 luci-app-cloudflared
 - 新增 luci-app-fakesip
 - 新增 luci-app-netspeedtest
 - 修复 libopenssl3 崩溃问题
 - 修复 接口重启后防火墙无法正常重载的问题
-- 修复 检查更新时, IP 触发 GitHub Limit 无法重试检查
+- 修复 检查更新时因 IP 触发 GitHub Limit 无法重试的问题
 
-* 防火墙设置 "路由/NAT 卸载" 建议设置为: 软件流量卸载 以开启 Flow Offloading
-* 修复 SmartDNS 依赖: libopenssl3 崩溃问题， SmartDNS 测速模式可选择: tcp:443,tcp:80,ping 以提升速度
+防火墙设置「路由/NAT 卸载」建议
+==============================
+- 如果你的 CPU 是 N5105 / N100 / i3 / i5 / i7，或者你需要一些 QOS 功能，建议关闭
+- 如果你的网卡是多队列网卡 (例如 Intel i225 / i226 / i210) 自带硬件 offload，建议关闭
+- 如果你的 CPU 是 J1900 / N3150 / E3845 老主机，建议选择“软件流量卸载”，以开启 Flow Offloading
+> 如果网络出现断流、UDP 异常等，可尝试关闭流量卸载
+
+SmartDNS 测速模式建议
+=====================
+可设置为：tcp:443, tcp:80, ping  
+以提升速度。
+
 !!! 修改完成后建议重启 !!!
