@@ -18,7 +18,7 @@
 
 设置建议
 ========
-防火墙「路由/NAT 卸载」设置建议选择 `软件流量卸载` 以开启 `Flow Offloading`
-SmartDNS 测速模式 可设置为：tcp:443, tcp:80, ping 以提升速度。
+SmartDNS 测速模式 可设置为：tcp:443,tcp:80,ping 以提升速度。
 
 !!! 修改完成后建议重启 !!!
+
