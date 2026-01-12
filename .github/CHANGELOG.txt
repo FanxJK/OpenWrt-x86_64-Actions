@@ -1,7 +1,6 @@
 本次更新
 ========
-- 新增 SmartDNS Dashboard 默认账号：admin / password
-- 解决 SmartDNS 在 nftables 下的性能问题
+- 更新 EasyTier 版本, 支持了 TCP 打洞, 提升复杂网络下的直连成功率
 - 更新 SmartDNS 版本
 - 更新 UU 加速器版本
 - 更新 OpenClash 版本
@@ -9,6 +8,7 @@
 近期更新
 ========
 - 更新 ImmortalWrt 到 24.10.4
+- 新增 SmartDNS Dashboard (默认账号：admin / password)
 - 新增 luci-app-cloudflared
 - 新增 luci-app-fakesip
 - 新增 luci-app-netspeedtest
@@ -21,4 +21,5 @@
 SmartDNS 测速模式 可设置为：tcp:443,tcp:80,ping 以提升速度。
 
 !!! 修改完成后建议重启 !!!
+
 
