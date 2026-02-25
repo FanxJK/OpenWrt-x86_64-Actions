@@ -27,3 +27,7 @@ git clone https://github.com/EasyTier/luci-app-easytier.git --depth=1 --single-b
 # luci-app-netspeedtest
 rm -rf ./feeds/packages/net/speedtest-cli
 git clone https://github.com/sirpdboy/luci-app-netspeedtest.git --depth=1 --single-branch package/luci-app-netspeedtest
+
+# luci-app-bandix
+git clone https://github.com/timsaya/luci-app-bandix.git --depth=1 --single-branch package/luci-app-bandix
+git clone https://github.com/timsaya/openwrt-bandix.git --depth=1 --single-branch package/bandix

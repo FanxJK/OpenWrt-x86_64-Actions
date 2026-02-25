@@ -1,3 +1,6 @@
+# 2026-02-25
+- 新增 `luci-app-bandix`
+
 # 2025-11-12
 - 新增 `SmartDNS Dashboard`
 
