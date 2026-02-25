@@ -175,36 +175,37 @@ jobs:
 
     - name: Upload bin directory
       uses: actions/upload-artifact@main
-      if: ${{ env.COMPILE_STATUS }} == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      if: ${{ env.COMPILE_STATUS == 'success' && env.UPLOAD_BIN_DIR == 'true' && !cancelled() }}
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
     - name: Organize files
       id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: ${{ env.UPLOAD_FIRMWARE == 'true' && !cancelled() }}
       run: |
+        set -e
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "ORANIZE_STATUS=success" >> $GITHUB_ENV
+        echo "ORGANIZE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
-      if: ${{ env.ORANIZE_STATUS }} == 'success' && !cancelled()
+      if: ${{ env.ORGANIZE_STATUS == 'success' && !cancelled() }}
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Create release
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: ${{ env.UPLOAD_RELEASE == 'true' && !cancelled() }}
       run: |
         echo "RELEASE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v2
-      if: env.RELEASE_STATUS == 'success' && !cancelled()
+      if: ${{ env.RELEASE_STATUS == 'success' && !cancelled() }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
@@ -221,7 +222,7 @@ jobs:
 
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@master
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: ${{ env.UPLOAD_RELEASE == 'true' && !cancelled() }}
       with:
         keep_latest: 3
         delete_tags: true
