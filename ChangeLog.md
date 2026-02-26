@@ -1,3 +1,6 @@
+# 2026-02-26
+- 更换 `netspeedtest` 版本
+
 # 2026-02-25
 - 新增 `luci-app-bandix`
 

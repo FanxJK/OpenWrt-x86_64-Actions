@@ -25,8 +25,7 @@ echo 'src-git fanx https://github.com/FanxJK/openwrt-packages' >> feeds.conf.def
 git clone https://github.com/EasyTier/luci-app-easytier.git --depth=1 --single-branch package/luci-app-easytier
 
 # luci-app-netspeedtest
-rm -rf ./feeds/packages/net/speedtest-cli
-git clone https://github.com/sirpdboy/luci-app-netspeedtest.git --depth=1 --single-branch package/luci-app-netspeedtest
+git clone https://github.com/muink/luci-app-netspeedtest.git --depth=1 --single-branch package/luci-app-netspeedtest
 
 # luci-app-bandix
 git clone https://github.com/timsaya/luci-app-bandix.git --depth=1 --single-branch package/luci-app-bandix
