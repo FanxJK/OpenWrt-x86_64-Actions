@@ -87,7 +87,7 @@ jobs:
         -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep $BUILD_VER | head -n 1)
         echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
         echo "Build Version: $REPO_TAG"
-        git clone $REPO_URL -b $REPO_TAG --depth=1 --single-branch openwrt
+        git clone $REPO_URL -b $REPO_TAG --single-branch openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         echo "After clone:"
         df -hT
