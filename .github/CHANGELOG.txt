@@ -1,14 +1,14 @@
 本次更新
 ========
-- 新增 LuCI Bandix, 提供直观的流量数据展示和分析 (需要启用软件流量卸载以准确监控)
 - 更换 netspeedtest 版本
-- 更新 EasyTier 版本, 支持了 TCP 打洞, 提升复杂网络下的直连成功率
-- 更新 UU 加速器版本
-- 更新 OpenClash 版本
+- 修复 EasyTier 检查新版本时版本号错乱的问题
+- 修复 OpenClash 更新后不自动启动的问题
+- 修改 OTA 检查更新失败后的重试逻辑
 
 近期更新
 ========
 - 更新 ImmortalWrt 到 24.10.5
+- 新增 LuCI Bandix, 提供直观的流量数据展示和分析 (需要启用软件流量卸载以准确监控)
 - 新增 SmartDNS Dashboard (默认账号：admin / password)
 - 新增 luci-app-cloudflared
 - 新增 luci-app-netspeedtest
