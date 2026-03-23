@@ -1,6 +1,7 @@
 本次更新
 ========
 - 更新 ImmortalWrt 到 25.12.0-rc1
+- FakeHTTP 与 FakeSIP 新增 Payload 模式
 - 更新 UU 加速器版本
 
 近期更新
@@ -9,7 +10,7 @@
 - 修复 OpenClash 更新后不自动启动的问题
 - 修改 OTA 检查更新失败后的重试逻辑
 - 新增 LuCI Bandix, 提供直观的流量数据展示和分析 (需要启用软件流量卸载以准确监控)
-- 新增 SmartDNS Dashboard (默认账号：admin / password)
+- 新增 SmartDNS Dashboard (默认不启用, 账号：admin / password)
 - 新增 luci-app-cloudflared
 - 新增 luci-app-netspeedtest
 
