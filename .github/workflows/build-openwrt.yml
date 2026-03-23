@@ -33,7 +33,7 @@ on:
 
 env:
   REPO_NAME: immortalwrt/immortalwrt
-  BUILD_VER: "24.10"
+  BUILD_VER: "25.12"
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
