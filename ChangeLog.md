@@ -1,5 +1,6 @@
 # 2026-03-23
 - 更新 ImmortalWrt 版本到 25.12
+- FakeHTTP 与 FakeSIP 新增 Payload 模式
 
 # 2026-02-26
 - 更换 `netspeedtest` 版本
