@@ -2,7 +2,8 @@
 ========
 - 更新 ImmortalWrt 到 25.12.0-rc1
 - FakeHTTP 与 FakeSIP 新增 Payload 模式
-- 更新 UU 加速器版本
+- 清理冗余依赖项
+- 修复 SFTP 不可用的问题
 
 近期更新
 ========

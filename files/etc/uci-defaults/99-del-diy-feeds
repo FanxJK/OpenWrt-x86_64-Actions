@@ -1,3 +1,5 @@
 #!/bin/sh
 
-sed -i '/fanx/d' /etc/apk/repositories.d/distfeeds.list
+[ -f /etc/apk/repositories.d/distfeeds.list ] || exit 0
+
+sed -i '/fanx/d;/\/video\/packages\.adb/d' /etc/apk/repositories.d/distfeeds.list

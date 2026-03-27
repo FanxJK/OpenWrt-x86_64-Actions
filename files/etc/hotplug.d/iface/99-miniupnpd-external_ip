@@ -1,7 +1,18 @@
-#!/bin/bash
+#!/bin/sh
+
+is_upnp_enabled() {
+    [ -x /etc/init.d/miniupnpd ] || return 1
+    /etc/init.d/miniupnpd enabled >/dev/null 2>&1 || return 1
+    [ "$(uci -q get upnpd.config.enabled)" = "1" ] || return 1
+}
 
 if [ "$ACTION" = "ifup" ] && [ "$INTERFACE" = "wan" ]; then
-    logger -t "update-upnp" "WAN 接口已连接, 开始更新 UPnP 配置"
+    if ! is_upnp_enabled; then
+        logger -t "update-upnp" "miniupnpd is disabled; skipping external IP update"
+        exit 0
+    fi
+
+    logger -t "update-upnp" "WAN is up; scheduling external IP update"
     sleep 60
     /usr/bin/update-upnp.sh
 fi
