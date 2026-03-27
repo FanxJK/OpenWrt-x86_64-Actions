@@ -4,6 +4,7 @@
 - FakeHTTP 与 FakeSIP 新增 Payload 模式
 - 清理冗余依赖项
 - 修复 SFTP 不可用的问题
+- 修复软件源报错问题
 
 近期更新
 ========
