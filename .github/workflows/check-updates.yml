@@ -64,7 +64,7 @@ jobs:
         sudo chown $USER:$GROUPS /workdir
         REPO_URL="https://github.com/$REPO_NAME.git"
         REPO_TAG=${{ env.REPO_TAG }}
-        git clone $REPO_URL -b $REPO_TAG --depth=1 --single-branch /workdir/openwrt
+        git clone $REPO_URL -b $REPO_TAG --single-branch /workdir/openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Keep cache alive
