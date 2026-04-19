@@ -74,6 +74,7 @@ jobs:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
         clean: 'false'
+        skip_saving: 'true'
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
