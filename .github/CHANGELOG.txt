@@ -1,7 +1,8 @@
 本次更新
 ========
 - 更新 ImmortalWrt 到 25.12.0-rc2
-- 现代化重写 OTA 更新程序、WolPlus、UUGameBooster
+- 现代化重写 OTA 更新、WolPlus、UUGameBooster
+- 将 OTA 更新 移动至系统分栏
 - 将 luci-app-bandix 更换为 luci-app-bandix-plus
 - 更新 EasyTier 版本
 
