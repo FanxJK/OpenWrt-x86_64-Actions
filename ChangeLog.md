@@ -1,3 +1,6 @@
+# 2026-05-07
+- 将 `luci-app-bandix` 更换为 `luci-app-bandix-plus`
+
 # 2026-03-23
 - 更新 ImmortalWrt 版本到 25.12
 - FakeHTTP 与 FakeSIP 新增 Payload 模式
