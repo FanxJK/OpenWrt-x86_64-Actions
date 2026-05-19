@@ -1,3 +1,6 @@
+# 2026-05-19
+- 将 `luci-app-wolplus` 更换为 `luci-app-wol`
+
 # 2026-05-07
 - 将 `luci-app-bandix` 更换为 `luci-app-bandix-plus`
 
