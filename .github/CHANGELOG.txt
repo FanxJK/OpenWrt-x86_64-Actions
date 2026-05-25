@@ -1,6 +1,6 @@
 本次更新
 ========
-- 更新 ImmortalWrt 到 25.12.0-rc2
+- 更新 ImmortalWrt 到 25.12.0
 - 现代化重写 OTA 更新、UUGameBooster
 - 将 OTA 更新 移动至系统分栏
 - 将 luci-app-wolplus 更换为 luci-app-wol
