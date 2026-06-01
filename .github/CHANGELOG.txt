@@ -1,21 +1,19 @@
 本次更新
 ========
-- 更新 ImmortalWrt 到 25.12.0
-- 现代化重写 OTA 更新、UUGameBooster
-- 将 OTA 更新 移动至系统分栏
-- 将 luci-app-wolplus 更换为 luci-app-wol
-- 将 luci-app-bandix 更换为 luci-app-bandix-plus
-- 更新 EasyTier 版本
+- 移除 luci-app-msd_lite
+- 更新 EasyTier、SmartDNS、OpenClash 版本
+- SmartDNS 现已支持 TCP-SYN 测速；建议将测速模式设置为 tcp-syn:443,tcp-syn:80,ping，以兼顾测速速度与准确性
 
 近期更新
 ========
+- 更新 ImmortalWrt 到 25.12.0
 - FakeHTTP 与 FakeSIP 新增 Payload 模式
 - 修复 OpenClash 更新后不自动启动的问题
-- 新增 LuCI Bandix, 提供直观的流量数据展示和分析 (需要启用软件流量卸载以准确监控)
-- 新增 SmartDNS Dashboard (默认不启用, 账号：admin / password)
+- 将 OTA 更新移动至系统分栏
 
 设置建议
 ========
-SmartDNS 测速模式 可设置为：tcp:443,tcp:80,ping 以提升速度。
+- SmartDNS Dashboard 默认未启用 (默认账号密码: admin/password)
+- Bandix Plus 需启用软件流量卸载，以保证监控准确性
 
 !!! 修改完成后建议重启 !!!

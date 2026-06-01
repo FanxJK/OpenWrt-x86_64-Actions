@@ -1,3 +1,6 @@
+# 2026-06-02
+- 移除 `luci-app-msd_lite`
+
 # 2026-05-19
 - 将 `luci-app-wolplus` 更换为 `luci-app-wol`
 
