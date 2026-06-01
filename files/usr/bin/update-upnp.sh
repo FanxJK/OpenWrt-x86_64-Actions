@@ -13,6 +13,28 @@ is_upnp_enabled() {
     [ "$(uci -q get upnpd.config.enabled)" = "1" ] || return 1
 }
 
+is_public_ipv4() {
+    printf '%s\n' "$1" | awk -F. '
+    NF != 4 { exit 1 }
+    {
+        for (i = 1; i <= 4; i++) {
+            if ($i !~ /^[0-9]+$/ || $i < 0 || $i > 255) exit 1
+        }
+
+        # Reject non-public IPv4 ranges.
+        if ($1 == 0) exit 1
+        if ($1 == 10) exit 1
+        if ($1 == 127) exit 1
+        if ($1 == 169 && $2 == 254) exit 1
+        if ($1 == 172 && $2 >= 16 && $2 <= 31) exit 1
+        if ($1 == 192 && $2 == 168) exit 1
+        if ($1 == 100 && $2 >= 64 && $2 <= 127) exit 1
+        if ($1 >= 224) exit 1
+
+        exit 0
+    }'
+}
+
 get_public_ip() {
     if ! command -v curl >/dev/null 2>&1; then
         logger -t "update-upnp" -p err "curl is not installed"
@@ -22,15 +44,15 @@ get_public_ip() {
     for api in $IP_APIS; do
         logger -t "update-upnp" "Trying $api for public IP"
 
-        ip=$(curl -4 -fsS --connect-timeout 5 "$api" 2>/dev/null | grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' | head -n 1)
+        ip=$(curl -4 -fsS --connect-timeout 5 --max-time 8 "$api" 2>/dev/null | grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' | head -n 1)
 
-        if printf '%s\n' "$ip" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+        if is_public_ipv4 "$ip"; then
             logger -t "update-upnp" "Detected public IP: $ip"
             printf '%s' "$ip"
             return 0
         fi
 
-        logger -t "update-upnp" -p warning "Failed to parse an IPv4 address from $api"
+        logger -t "update-upnp" -p warning "Failed to get a valid public IPv4 from $api"
     done
 
     logger -t "update-upnp" -p err "Failed to detect public IP from all APIs"
@@ -43,6 +65,12 @@ update_upnpd_config() {
     if [ -z "$ip" ]; then
         logger -t "update-upnp" -p err "Public IP is empty"
         return 1
+    fi
+
+    old_ip="$(uci -q get upnpd.config.external_ip)"
+    if [ "$old_ip" = "$ip" ]; then
+        logger -t "update-upnp" "upnpd external IP unchanged: $ip"
+        return 0
     fi
 
     if ! uci set upnpd.config.external_ip="$ip"; then
