@@ -1,8 +1,8 @@
 #!/bin/sh
 
 IP_APIS="
-http://4.ipw.cn
-http://myip.ipip.net
+http://myip.ipip.net/s
+http://ddns.oray.com/checkip
 http://ip.3322.net
 http://members.3322.org/dyndns/getip
 "
@@ -22,7 +22,7 @@ get_public_ip() {
     for api in $IP_APIS; do
         logger -t "update-upnp" "Trying $api for public IP"
 
-        ip=$(curl -fsS --connect-timeout 5 "$api" 2>/dev/null | grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' | head -n 1)
+        ip=$(curl -4 -fsS --connect-timeout 5 "$api" 2>/dev/null | grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' | head -n 1)
 
         if printf '%s\n' "$ip" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
             logger -t "update-upnp" "Detected public IP: $ip"
