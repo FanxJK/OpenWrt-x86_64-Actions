@@ -45,12 +45,6 @@ update_upnpd_config() {
         return 1
     fi
 
-    old_ip="$(uci -q get upnpd.config.external_ip)"
-    if [ "$old_ip" = "$ip" ]; then
-        logger -t "update-upnp" "upnpd external IP unchanged: $ip"
-        return 0
-    fi
-
     if ! uci set upnpd.config.external_ip="$ip"; then
         logger -t "update-upnp" -p err "Failed to update upnpd external_ip"
         return 1
