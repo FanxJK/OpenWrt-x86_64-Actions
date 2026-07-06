@@ -6,8 +6,8 @@
 # See /LICENSE for more information.
 #
 # https://github.com/P3TERX/Actions-OpenWrt
-# File name: diy-part2.sh
-# Description: OpenWrt DIY script part 2 (After Update feeds)
+# File name: custom-config.sh
+# Description: Custom script after installing feeds
 #
 
 # Modify default IP

@@ -36,8 +36,8 @@ env:
   BUILD_VER: "25.12"
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
-  DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2.sh
+  CUSTOM_FEEDS_SH: custom-feeds.sh
+  CUSTOM_CONFIG_SH: custom-config.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: ${{ github.event.client_payload.upload_release || github.event.inputs.upload_release }}
@@ -102,9 +102,9 @@ jobs:
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $DIY_P1_SH
+        chmod +x $CUSTOM_FEEDS_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
+        $GITHUB_WORKSPACE/$CUSTOM_FEEDS_SH
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -126,9 +126,9 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $DIY_P2_SH
+        chmod +x $CUSTOM_CONFIG_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        $GITHUB_WORKSPACE/$CUSTOM_CONFIG_SH
 
     - name: Download package
       id: package
