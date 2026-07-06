@@ -6,7 +6,7 @@
 
 近期更新
 ========
-- 更新 ImmortalWrt 到 25.12.0
+- 更新 ImmortalWrt 到 25.12.1
 - FakeHTTP 与 FakeSIP 新增 Payload 模式
 - 修复 OpenClash 更新后不自动启动的问题
 - 将 OTA 更新移动至系统分栏
