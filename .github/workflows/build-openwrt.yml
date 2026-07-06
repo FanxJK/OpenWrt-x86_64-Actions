@@ -204,14 +204,25 @@ jobs:
         echo "RELEASE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@v2
       if: ${{ env.RELEASE_STATUS == 'success' && !cancelled() }}
       env:
-        GITHUB_TOKEN: ${{ github.token }}
-      with:
-        body_path: ${{ github.workspace }}/.github/CHANGELOG.txt
-        tag_name: ${{ env.RELEASE_TAG }}
-        files: ${{ env.FIRMWARE }}/*
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+          gh release edit "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --notes-file "$GITHUB_WORKSPACE/.github/CHANGELOG.txt"
+          gh release upload "$RELEASE_TAG" "$FIRMWARE"/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber
+        else
+          gh release create "$RELEASE_TAG" "$FIRMWARE"/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$RELEASE_TAG" \
+            --notes-file "$GITHUB_WORKSPACE/.github/CHANGELOG.txt" \
+            --target "$GITHUB_SHA"
+        fi
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
@@ -221,10 +232,18 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@master
       if: ${{ env.UPLOAD_RELEASE == 'true' && !cancelled() }}
-      with:
-        keep_latest: 3
-        delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName,createdAt \
+          --jq 'sort_by(.createdAt) | reverse | .[3:][] | .tagName' |
+        while IFS= read -r tag_name; do
+          [ -n "$tag_name" ] || continue
+          echo "Deleting old release and tag: $tag_name"
+          gh release delete "$tag_name" \
+            --repo "$GITHUB_REPOSITORY" \
+            --yes \
+            --cleanup-tag
+        done
