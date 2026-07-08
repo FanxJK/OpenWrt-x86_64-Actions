@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# OpenClash's default sysupgrade keep rule can preserve the whole
+# /etc/openclash directory. On x86, sysupgrade stores the config archive on
+# the small boot partition before reboot, so backing up cores, Geo databases,
+# caches, and history can make sysupgrade.tgz too large to restore.
+# Keep only user configuration and provider data needed after upgrade.
+
+mkdir -p /lib/upgrade/keep.d
+
+cat > /lib/upgrade/keep.d/luci-app-openclash <<'KEEP_EOF'
+/etc/config/openclash
+/etc/openclash/config/
+/etc/openclash/custom/
+/etc/openclash/overwrite/
+KEEP_EOF
+
+exit 0
