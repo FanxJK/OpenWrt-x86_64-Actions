@@ -1,12 +1,6 @@
 #!/bin/sh
 
-# OpenClash's default sysupgrade keep rule can preserve the whole
-# /etc/openclash directory. On x86, sysupgrade stores the config archive on
-# the small boot partition before reboot, so backing up Geo databases,
-# caches, history, and duplicate runtime files can make sysupgrade.tgz too
-# large to restore. Keep only user configuration plus the active Meta core so
-# OpenClash can start immediately after upgrade without prompting to download
-# the core again.
+# Keep OpenClash backups small enough for x86 sysupgrade's boot partition.
 
 mkdir -p /lib/upgrade/keep.d
 
