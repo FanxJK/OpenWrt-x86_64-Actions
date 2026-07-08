@@ -10,6 +10,8 @@ cat > /lib/upgrade/keep.d/luci-app-openclash <<'KEEP_EOF'
 /etc/openclash/custom/
 /etc/openclash/overwrite/
 /etc/openclash/core/clash_meta
+/etc/openclash/history/
+/etc/openclash/proxy_provider/
 KEEP_EOF
 
 exit 0
