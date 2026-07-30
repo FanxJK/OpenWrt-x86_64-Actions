@@ -31,11 +31,13 @@ sed -i \
   -e "s/^PKG_VERSION:=.*/PKG_VERSION:=${SMARTDNS_VERSION}/" \
   -e 's/^PKG_RELEASE:=.*/PKG_RELEASE:=1/' \
   -e "s/^PKG_HASH:=.*/PKG_HASH:=${SMARTDNS_SOURCE_HASH}/" \
+  -e 's/^  DEPENDS:=+i386:libatomic +libopenssl$/  DEPENDS:=+i386:libatomic +libopenssl +zlib/' \
   -e 's|^include ../../lang/rust/rust-package.mk$|include $(TOPDIR)/feeds/packages/lang/rust/rust-package.mk|' \
   "$SMARTDNS_PACKAGE_DIR/Makefile" || exit 1
 
 grep -qxF "PKG_VERSION:=${SMARTDNS_VERSION}" "$SMARTDNS_PACKAGE_DIR/Makefile" || exit 1
 grep -qxF "PKG_HASH:=${SMARTDNS_SOURCE_HASH}" "$SMARTDNS_PACKAGE_DIR/Makefile" || exit 1
+grep -qxF '  DEPENDS:=+i386:libatomic +libopenssl +zlib' "$SMARTDNS_PACKAGE_DIR/Makefile" || exit 1
 grep -qxF 'include $(TOPDIR)/feeds/packages/lang/rust/rust-package.mk' "$SMARTDNS_PACKAGE_DIR/Makefile" || exit 1
 
 # Add a feed source

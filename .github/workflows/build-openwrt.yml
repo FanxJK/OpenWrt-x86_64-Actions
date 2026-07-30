@@ -182,29 +182,36 @@ jobs:
 
     - name: Organize files
       id: organize
-      if: ${{ env.UPLOAD_FIRMWARE == 'true' && !cancelled() }}
+      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.UPLOAD_FIRMWARE == 'true' }}
       run: |
         set -e
         cd openwrt/bin/targets/*/*
         rm -rf packages
+        shopt -s nullglob
+        firmware_images=( *-combined*.img.gz )
+        firmware_manifests=( *.manifest )
+        if (( ${#firmware_images[@]} == 0 || ${#firmware_manifests[@]} == 0 )) || [ ! -s sha256sums ]; then
+          echo "::error::Firmware output is incomplete; refusing to upload artifacts or create a release."
+          exit 1
+        fi
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "ORGANIZE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
-      if: ${{ env.ORGANIZE_STATUS == 'success' && !cancelled() }}
+      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.ORGANIZE_STATUS == 'success' }}
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Create release
       id: tag
-      if: ${{ env.UPLOAD_RELEASE == 'true' && !cancelled() }}
+      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.ORGANIZE_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' }}
       run: |
         echo "RELEASE_STATUS=success" >> $GITHUB_ENV
 
     - name: Upload firmware to release
-      if: ${{ env.RELEASE_STATUS == 'success' && !cancelled() }}
+      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.RELEASE_STATUS == 'success' }}
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
@@ -223,6 +230,7 @@ jobs:
             --notes-file "$GITHUB_WORKSPACE/.github/CHANGELOG.txt" \
             --target "$GITHUB_SHA"
         fi
+        echo "RELEASE_UPLOAD_STATUS=success" >> "$GITHUB_ENV"
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
@@ -232,7 +240,7 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      if: ${{ env.UPLOAD_RELEASE == 'true' && !cancelled() }}
+      if: ${{ success() && env.RELEASE_UPLOAD_STATUS == 'success' }}
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
