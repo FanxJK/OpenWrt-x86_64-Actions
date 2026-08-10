@@ -1,11 +1,29 @@
 #!/bin/sh
 
 IP_APIS="
-http://myip.ipip.net/s
-http://ddns.oray.com/checkip
-http://ip.3322.net
-http://members.3322.org/dyndns/getip
+https://myip.ipip.net/s
+https://ddns.oray.com/checkip
+https://ip.3322.net
 "
+
+is_public_ipv4() {
+    printf '%s\n' "$1" | awk -F. '
+    NF != 4 { exit 1 }
+    {
+        for (i = 1; i <= 4; i++) {
+            if ($i !~ /^[0-9]+$/ || $i < 0 || $i > 255) exit 1
+        }
+        if ($1 == 0 || $1 == 10 || $1 == 127) exit 1
+        if ($1 == 100 && $2 >= 64 && $2 <= 127) exit 1
+        if ($1 == 169 && $2 == 254) exit 1
+        if ($1 == 172 && $2 >= 16 && $2 <= 31) exit 1
+        if ($1 == 192 && ($2 == 0 || $2 == 2 || $2 == 168 || ($2 == 88 && $3 == 99))) exit 1
+        if ($1 == 198 && ($2 == 18 || $2 == 19 || $2 == 51)) exit 1
+        if ($1 == 203 && $2 == 0 && $3 == 113) exit 1
+        if ($1 >= 224) exit 1
+        exit 0
+    }'
+}
 
 is_upnp_enabled() {
     [ -x /etc/init.d/miniupnpd ] || return 1
@@ -24,12 +42,15 @@ get_public_ip() {
 
         ip=$(curl -4 -fsS --connect-timeout 5 --max-time 8 "$api" 2>/dev/null | grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' | head -n 1)
 
-        if [ -n "$ip" ]; then
+        if [ -n "$ip" ] && is_public_ipv4 "$ip"; then
             logger -t "update-upnp" "Detected public IP: $ip"
             printf '%s' "$ip"
             return 0
         fi
 
+        if [ -n "$ip" ]; then
+            logger -t "update-upnp" -p warning "Rejected non-public or invalid IPv4 from $api: $ip"
+        fi
         logger -t "update-upnp" -p warning "Failed to get public IPv4 from $api"
     done
 
@@ -42,6 +63,11 @@ update_upnpd_config() {
 
     if [ -z "$ip" ]; then
         logger -t "update-upnp" -p err "Public IP is empty"
+        return 1
+    fi
+
+    if ! is_public_ipv4 "$ip"; then
+        logger -t "update-upnp" -p err "Refusing invalid or non-public IPv4: $ip"
         return 1
     fi
 
@@ -70,8 +96,7 @@ main() {
         exit 0
     fi
 
-    public_ip=$(get_public_ip)
-    if [ $? -ne 0 ]; then
+    if ! public_ip=$(get_public_ip); then
         logger -t "update-upnp" -p err "Unable to detect public IP; aborting"
         exit 1
     fi

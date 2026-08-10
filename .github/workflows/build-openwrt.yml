@@ -44,6 +44,10 @@ env:
   CLEAN_CACHE: ${{ github.event.client_payload.clean_cache || github.event.inputs.clean_cache }}
   TZ: Asia/Shanghai
 
+concurrency:
+  group: openwrt-firmware-build
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -73,22 +77,32 @@ jobs:
           texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        sudo chown "$USER:$(id -gn)" /workdir
 
     - name: Checkout
       uses: actions/checkout@main
+      with:
+        persist-credentials: false
 
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT $PWD
+        df -hT "$PWD"
         REPO_URL="https://github.com/$REPO_NAME.git"
-        REPO_TAG=$(curl -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" \
-        -sX GET "https://api.github.com/repos/$REPO_NAME/tags" | awk -F '"' '/name/{print $4}' | grep $BUILD_VER | head -n 1)
-        echo "REPO_TAG=$REPO_TAG" >> $GITHUB_ENV
+        REPO_TAG=$(
+          curl -fsSL --retry 3 --retry-all-errors --retry-delay 2 \
+            "https://api.github.com/repos/$REPO_NAME/tags?per_page=100" |
+          awk -F '"' -v version="$BUILD_VER" \
+            '/"name":/ && index($4, "v" version) == 1 { print $4; exit }'
+        )
+        if [ -z "$REPO_TAG" ]; then
+          echo "::error::Unable to resolve an ImmortalWrt $BUILD_VER release tag."
+          exit 1
+        fi
+        echo "REPO_TAG=$REPO_TAG" >> "$GITHUB_ENV"
         echo "Build Version: $REPO_TAG"
-        git clone $REPO_URL -b $REPO_TAG --single-branch openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        git clone --depth=1 --branch "$REPO_TAG" --single-branch "$REPO_URL" openwrt
+        ln -sf /workdir/openwrt "$GITHUB_WORKSPACE/openwrt"
         echo "After clone:"
         df -hT
 
@@ -101,10 +115,10 @@ jobs:
 
     - name: Load custom feeds
       run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $CUSTOM_FEEDS_SH
+        [ -e "$FEEDS_CONF" ] && mv -- "$FEEDS_CONF" openwrt/feeds.conf.default
+        chmod +x -- "$CUSTOM_FEEDS_SH"
         cd openwrt
-        $GITHUB_WORKSPACE/$CUSTOM_FEEDS_SH
+        "$GITHUB_WORKSPACE/$CUSTOM_FEEDS_SH"
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -116,26 +130,29 @@ jobs:
       run: cd openwrt && ./scripts/feeds install -a
 
     - name: Add Github release Tag to firmware
+      env:
+        REPO_TAG: ${{ env.REPO_TAG }}
       run: |
         cd openwrt
         BUILD_DATE=$(date +"%Y.%m.%d")
-        echo "RELEASE_TAG=${{ env.REPO_TAG }}-$BUILD_DATE" >> $GITHUB_ENV
-        echo "DISTRIB_GITHUBVER='${{ env.REPO_TAG }}-$BUILD_DATE'" >> package/base-files/files/etc/openwrt_release
+        echo "RELEASE_TAG=$REPO_TAG-$BUILD_DATE" >> "$GITHUB_ENV"
+        echo "DISTRIB_GITHUBVER='$REPO_TAG-$BUILD_DATE'" >> package/base-files/files/etc/openwrt_release
 
     - name: Load custom configuration
       run: |
-        [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $CUSTOM_CONFIG_SH
+        [ -e files ] && mv -- files openwrt/files
+        [ -e "$CONFIG_FILE" ] && mv -- "$CONFIG_FILE" openwrt/.config
+        chmod +x -- "$CUSTOM_CONFIG_SH"
         cd openwrt
-        $GITHUB_WORKSPACE/$CUSTOM_CONFIG_SH
+        "$GITHUB_WORKSPACE/$CUSTOM_CONFIG_SH"
 
     - name: Download package
       id: package
       run: |
         cd openwrt
         make defconfig
-        make download -j$(nproc)
+        JOBS=$(nproc)
+        make download -j"$JOBS"
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -162,12 +179,13 @@ jobs:
       id: compile
       run: |
         cd openwrt
-        echo -e "$(nproc) thread compile"
-        make -j$(($(nproc) + 1)) || make -j$(nproc) V=s || make -j1 V=s
-        echo "COMPILE_STATUS=success" >> $GITHUB_ENV
+        JOBS=$(nproc)
+        echo "$JOBS thread compile"
+        make -j"$((JOBS + 1))" || make -j"$JOBS" V=s || make -j1 V=s
+        echo "COMPILE_STATUS=success" >> "$GITHUB_ENV"
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> "$GITHUB_ENV"
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> "$GITHUB_ENV"
 
     - name: Check space usage
       if: (!cancelled())
@@ -194,8 +212,8 @@ jobs:
           echo "::error::Firmware output is incomplete; refusing to upload artifacts or create a release."
           exit 1
         fi
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "ORGANIZE_STATUS=success" >> $GITHUB_ENV
+        echo "FIRMWARE=$PWD" >> "$GITHUB_ENV"
+        echo "ORGANIZE_STATUS=success" >> "$GITHUB_ENV"
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
@@ -208,7 +226,7 @@ jobs:
       id: tag
       if: ${{ success() && env.COMPILE_STATUS == 'success' && env.ORGANIZE_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' }}
       run: |
-        echo "RELEASE_STATUS=success" >> $GITHUB_ENV
+        echo "RELEASE_STATUS=success" >> "$GITHUB_ENV"
 
     - name: Upload firmware to release
       if: ${{ success() && env.COMPILE_STATUS == 'success' && env.RELEASE_STATUS == 'success' }}

@@ -1,9 +1,12 @@
 本次更新
 ========
-- 修复在部分 DoH 服务 SmartDNS 查询成功率较低的问题
+- 接入软件源，提供自定义软件包安装与更新
+- 提升 UPnP 健壮性
+- 修复某些情况下 OTA 更新配置继承不完整的问题
 
 近期更新
 ========
+- 修复在部分 DoH 服务 SmartDNS 查询成功率较低的问题
 - 更新 ImmortalWrt 到 25.12.1
 - FakeHTTP 与 FakeSIP 新增 Payload 模式
 - 修复 OpenClash 更新后不自动启动的问题
