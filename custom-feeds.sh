@@ -16,9 +16,9 @@
 # Remove git revision
 curl https://raw.githubusercontent.com/immortalwrt/immortalwrt/openwrt-25.12/feeds.conf.default -o feeds.conf.default
 
-# Pin SmartDNS to Release48.3
-SMARTDNS_VERSION="48.3"
-SMARTDNS_SOURCE_HASH="309e62cc790c9985d7ccebe9c25c64e25a9d11c2fd98824982dd5908530ba1c0"
+# Pin SmartDNS to Release48.4
+SMARTDNS_VERSION="48.4"
+SMARTDNS_SOURCE_HASH="b07abba99e921f262ba47588e12f5b36dd849f79c0145542440eb6b7eed80553"
 SMARTDNS_RECIPE_COMMIT="69f474e5d5f764d0f6d4be9e0356f656cf375ba6"
 SMARTDNS_PACKAGE_DIR="package/net/smartdns"
 
