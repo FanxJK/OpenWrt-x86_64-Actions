@@ -14,16 +14,9 @@ set -e
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
 
-# Replace stale luci-app-openclash from ImmortalWrt's release luci feed
-# with the latest upstream OpenClash package.
-tmp_openclash="$(mktemp -d)"
-trap 'rm -rf "$tmp_openclash"' EXIT
-
-git clone --depth=1 --filter=blob:none --sparse https://github.com/vernesong/OpenClash.git "$tmp_openclash"
-git -C "$tmp_openclash" sparse-checkout set luci-app-openclash
+# Replace the release feed's OpenClash with the latest upstream version
+git clone --depth=1 --filter=blob:none --sparse https://github.com/vernesong/OpenClash.git /tmp/OpenClash
+git -C /tmp/OpenClash sparse-checkout set luci-app-openclash
 
 rm -rf feeds/luci/applications/luci-app-openclash
-mv "$tmp_openclash/luci-app-openclash" feeds/luci/applications/luci-app-openclash
-
-# Disable downloading ci-llvm
-# sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
+mv /tmp/OpenClash/luci-app-openclash feeds/luci/applications/luci-app-openclash

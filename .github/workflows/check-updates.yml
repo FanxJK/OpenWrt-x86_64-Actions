@@ -31,29 +31,12 @@ jobs:
 
     - name: Check Updates
       run: |
-        CURRENT_TAG=$(
-          curl -fsSL --retry 3 --retry-all-errors --retry-delay 2 \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" |
-          awk -F '"' '/"tag_name":/ { print $4; exit }'
-        )
-        REPO_TAG=$(
-          curl -fsSL --retry 3 --retry-all-errors --retry-delay 2 \
-            "https://api.github.com/repos/$REPO_NAME/tags?per_page=100" |
-          awk -F '"' -v version="$BUILD_VER" \
-            '/"name":/ && index($4, "v" version) == 1 { print $4; exit }'
-        )
-        if [ -z "$CURRENT_TAG" ] || [ -z "$REPO_TAG" ]; then
-          echo "::error::Unable to resolve the current or upstream release tag."
-          exit 1
-        fi
-        if [[ "$CURRENT_TAG" == *rc* ]]; then
-          CURRENT_VER=$(echo "$CURRENT_TAG" | awk -F'-' '{print $1 "-" $2}')
-        else
-          CURRENT_VER=$(echo "$CURRENT_TAG" | awk -F'-' '{print $1}')
-        fi
+        CURRENT_TAG=$(curl -fsL -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | awk -F '"' '/tag_name/{print $4}')
+        REPO_TAG=$(curl -fsL -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" "https://api.github.com/repos/$REPO_NAME/tags?per_page=100" | awk -F '"' '/name/{print $4}' | grep "^v$BUILD_VER" | head -n 1)
+        [ -n "$CURRENT_TAG" ] && [ -n "$REPO_TAG" ] || { echo "::error::Unable to resolve the current or upstream release tag."; exit 1; }
+        CURRENT_VER=${CURRENT_TAG%-????.??.??}
         echo "Current Version: $CURRENT_VER"
         echo "Repo Version: $REPO_TAG"
-        echo "CURRENT_VER=$CURRENT_VER" >> "$GITHUB_ENV"
         echo "REPO_TAG=$REPO_TAG" >> "$GITHUB_ENV"
         if [ "$CURRENT_VER" != "$REPO_TAG" ]; then
           echo "Found Updates, Start Build..."
@@ -64,7 +47,7 @@ jobs:
         fi
 
     - name: Trigger build
-      if: ${{ env.HAS_UPDATE == 'true' }}
+      if: env.HAS_UPDATE == 'true'
       uses: peter-evans/repository-dispatch@main
       with:
         token: ${{ github.token }}
@@ -72,18 +55,11 @@ jobs:
         client-payload: '{"clean_cache": "true","upload_release": "true"}'
 
     - name: Setup workspace for cache
-      if: ${{ env.HAS_UPDATE == 'false' }}
-      env:
-        REPO_TAG: ${{ env.REPO_TAG }}
-      run: |
-        sudo mkdir -p /workdir
-        sudo chown "$USER:$(id -gn)" /workdir
-        REPO_URL="https://github.com/$REPO_NAME.git"
-        git clone --depth=1 --branch "$REPO_TAG" --single-branch "$REPO_URL" /workdir/openwrt
-        ln -sf /workdir/openwrt "$GITHUB_WORKSPACE/openwrt"
+      if: env.HAS_UPDATE == 'false'
+      run: git clone --depth=1 --branch "$REPO_TAG" --single-branch "https://github.com/$REPO_NAME.git" openwrt
 
     - name: Keep cache alive
-      if: ${{ env.HAS_UPDATE == 'false' }}
+      if: env.HAS_UPDATE == 'false'
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'

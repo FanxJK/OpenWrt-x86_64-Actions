@@ -34,12 +34,6 @@ on:
 env:
   REPO_NAME: immortalwrt/immortalwrt
   BUILD_VER: "25.12"
-  FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config
-  CUSTOM_FEEDS_SH: custom-feeds.sh
-  CUSTOM_CONFIG_SH: custom-config.sh
-  UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: ${{ github.event.client_payload.upload_release || github.event.inputs.upload_release }}
   CLEAN_CACHE: ${{ github.event.client_payload.clean_cache || github.event.inputs.clean_cache }}
   TZ: Asia/Shanghai
@@ -89,16 +83,8 @@ jobs:
       run: |
         df -hT "$PWD"
         REPO_URL="https://github.com/$REPO_NAME.git"
-        REPO_TAG=$(
-          curl -fsSL --retry 3 --retry-all-errors --retry-delay 2 \
-            "https://api.github.com/repos/$REPO_NAME/tags?per_page=100" |
-          awk -F '"' -v version="$BUILD_VER" \
-            '/"name":/ && index($4, "v" version) == 1 { print $4; exit }'
-        )
-        if [ -z "$REPO_TAG" ]; then
-          echo "::error::Unable to resolve an ImmortalWrt $BUILD_VER release tag."
-          exit 1
-        fi
+        REPO_TAG=$(curl -fsL -H "Authorization: Bearer ${{ secrets.MY_SECRETS_TOKEN }}" "https://api.github.com/repos/$REPO_NAME/tags?per_page=100" | awk -F '"' '/name/{print $4}' | grep "^v$BUILD_VER" | head -n 1)
+        [ -n "$REPO_TAG" ] || { echo "::error::Unable to resolve an ImmortalWrt $BUILD_VER release tag."; exit 1; }
         echo "REPO_TAG=$REPO_TAG" >> "$GITHUB_ENV"
         echo "Build Version: $REPO_TAG"
         git clone --branch "$REPO_TAG" --single-branch "$REPO_URL" openwrt
@@ -115,10 +101,8 @@ jobs:
 
     - name: Load custom feeds
       run: |
-        [ -e "$FEEDS_CONF" ] && mv -- "$FEEDS_CONF" openwrt/feeds.conf.default
-        chmod +x -- "$CUSTOM_FEEDS_SH"
         cd openwrt
-        "$GITHUB_WORKSPACE/$CUSTOM_FEEDS_SH"
+        "$GITHUB_WORKSPACE/custom-feeds.sh"
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -126,12 +110,7 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Re Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
-
     - name: Add Github release Tag to firmware
-      env:
-        REPO_TAG: ${{ env.REPO_TAG }}
       run: |
         cd openwrt
         BUILD_DATE=$(date +"%Y.%m.%d")
@@ -140,49 +119,32 @@ jobs:
 
     - name: Load custom configuration
       run: |
-        [ -e files ] && mv -- files openwrt/files
-        [ -e "$CONFIG_FILE" ] && mv -- "$CONFIG_FILE" openwrt/.config
-        chmod +x -- "$CUSTOM_CONFIG_SH"
+        mv files openwrt/files
+        mv .config openwrt/.config
         cd openwrt
-        "$GITHUB_WORKSPACE/$CUSTOM_CONFIG_SH"
+        "$GITHUB_WORKSPACE/custom-config.sh"
 
     - name: Download package
-      id: package
       run: |
         cd openwrt
         make defconfig
         JOBS=$(nproc)
         make download -j"$JOBS"
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        find dl -size -1024c -delete
 
     - name: Free up space before compile
       run: |
-        # Clean up unnecessary files to free space
         sudo apt-get clean
-        sudo apt-get autoremove -y --purge
-        sudo rm -rf /var/lib/apt/lists/*
-        sudo rm -rf /tmp/* /var/tmp/*
-        sudo rm -rf /var/log/*.log /var/log/*/*.log
-        # Clean docker and containers
+        sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/info/*
         sudo docker system prune -af --volumes
-        # Clean snap cache if exists
-        sudo rm -rf /var/lib/snapd/cache/* || true
-        # Clean journal logs
-        sudo journalctl --vacuum-time=1d || true
-        # Remove unnecessary documentation and man pages
-        sudo rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/*
-        # Show available space
         df -hT
 
     - name: Compile the firmware
-      id: compile
       run: |
         cd openwrt
         JOBS=$(nproc)
         echo "$JOBS thread compile"
         make -j"$((JOBS + 1))" || make -j"$JOBS" V=s || make -j1 V=s
-        echo "COMPILE_STATUS=success" >> "$GITHUB_ENV"
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> "$GITHUB_ENV"
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> "$GITHUB_ENV"
@@ -191,18 +153,8 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: Upload bin directory
-      uses: actions/upload-artifact@main
-      if: ${{ env.COMPILE_STATUS == 'success' && env.UPLOAD_BIN_DIR == 'true' && !cancelled() }}
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
-
     - name: Organize files
-      id: organize
-      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.UPLOAD_FIRMWARE == 'true' }}
       run: |
-        set -e
         cd openwrt/bin/targets/*/*
         rm -rf packages
         shopt -s nullglob
@@ -213,27 +165,18 @@ jobs:
           exit 1
         fi
         echo "FIRMWARE=$PWD" >> "$GITHUB_ENV"
-        echo "ORGANIZE_STATUS=success" >> "$GITHUB_ENV"
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
-      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.ORGANIZE_STATUS == 'success' }}
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: Create release
-      id: tag
-      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.ORGANIZE_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' }}
-      run: |
-        echo "RELEASE_STATUS=success" >> "$GITHUB_ENV"
-
     - name: Upload firmware to release
-      if: ${{ success() && env.COMPILE_STATUS == 'success' && env.RELEASE_STATUS == 'success' }}
+      if: env.UPLOAD_RELEASE == 'true'
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        set -euo pipefail
         if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
           gh release edit "$RELEASE_TAG" \
             --repo "$GITHUB_REPOSITORY" \
@@ -248,7 +191,6 @@ jobs:
             --notes-file "$GITHUB_WORKSPACE/.github/CHANGELOG.txt" \
             --target "$GITHUB_SHA"
         fi
-        echo "RELEASE_UPLOAD_STATUS=success" >> "$GITHUB_ENV"
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
@@ -258,11 +200,11 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      if: ${{ success() && env.RELEASE_UPLOAD_STATUS == 'success' }}
+      if: env.UPLOAD_RELEASE == 'true'
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        set -euo pipefail
+        set -o pipefail
         gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName,createdAt \
           --jq 'sort_by(.createdAt) | reverse | .[3:][] | .tagName' |
         while IFS= read -r tag_name; do
