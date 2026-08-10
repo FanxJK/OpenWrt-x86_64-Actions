@@ -47,7 +47,7 @@ grep -qxF '  DEPENDS:=+i386:libatomic +libopenssl +zlib' "$SMARTDNS_PACKAGE_DIR/
 grep -qxF 'include $(TOPDIR)/feeds/packages/lang/rust/rust-package.mk' "$SMARTDNS_PACKAGE_DIR/Makefile"
 
 # Add custom package feed
-FANX_FEED='src-git fanx https://github.com/FanxJK/openwrt-packages'
+FANX_FEED='src-git-full fanx https://github.com/FanxJK/openwrt-packages'
 grep -qxF "$FANX_FEED" feeds.conf.default || printf '%s\n' "$FANX_FEED" >> feeds.conf.default
 
 # luci-app-easytier

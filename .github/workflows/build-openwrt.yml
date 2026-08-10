@@ -101,7 +101,7 @@ jobs:
         fi
         echo "REPO_TAG=$REPO_TAG" >> "$GITHUB_ENV"
         echo "Build Version: $REPO_TAG"
-        git clone --depth=1 --branch "$REPO_TAG" --single-branch "$REPO_URL" openwrt
+        git clone --branch "$REPO_TAG" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt "$GITHUB_WORKSPACE/openwrt"
         echo "After clone:"
         df -hT
