@@ -1,3 +1,6 @@
+# 2026-11-04
+- 将 `Argon` 更换为 `Vantage` 主题
+
 # 2026-06-02
 - 移除 `luci-app-msd_lite`
 

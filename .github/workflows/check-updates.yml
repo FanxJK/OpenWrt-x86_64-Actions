@@ -54,18 +54,31 @@ jobs:
         event-type: Source Code Update
         client-payload: '{"clean_cache": "true","upload_release": "true"}'
 
-    - name: Setup workspace for cache
-      if: env.HAS_UPDATE == 'false'
-      run: git clone --depth=1 --branch "$REPO_TAG" --single-branch "https://github.com/$REPO_NAME.git" openwrt
-
     - name: Keep cache alive
+      id: keep-cache
       if: env.HAS_UPDATE == 'false'
-      uses: klever1988/cachewrtbuild@main
+      uses: actions/cache/restore@main
       with:
-        ccache: 'true'
-        prefix: ${{ github.workspace }}/openwrt
-        clean: 'false'
-        skip_saving: 'true'
+        path: |
+          openwrt/staging_dir/host*
+          openwrt/staging_dir/tool*
+          openwrt/.ccache
+          openwrt/tmp/go-build
+          openwrt/build_dir/hostpkg
+        key: openwrt-${{ runner.os }}-${{ runner.arch }}-${{ env.REPO_TAG }}_keepalive
+        restore-keys: |
+          openwrt-${{ runner.os }}-${{ runner.arch }}-${{ env.REPO_TAG }}_
+
+    - name: Check cache keepalive result
+      if: env.HAS_UPDATE == 'false'
+      env:
+        MATCHED_KEY: ${{ steps.keep-cache.outputs.cache-matched-key }}
+      run: |
+        if [ -n "$MATCHED_KEY" ]; then
+          echo "Cache kept alive: $MATCHED_KEY"
+        else
+          echo "::warning::No cache found for $REPO_TAG. A successful build is required to create it."
+        fi
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main

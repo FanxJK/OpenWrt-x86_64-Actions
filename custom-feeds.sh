@@ -26,3 +26,8 @@ git clone --depth=1 --single-branch https://github.com/muink/luci-app-netspeedte
 # luci-app-bandix-plus
 git clone --depth=1 --single-branch https://github.com/timsaya/luci-app-bandix-plus.git package/luci-app-bandix-plus
 git clone --depth=1 --single-branch https://github.com/timsaya/openwrt-bandix-plus.git package/openwrt-bandix-plus
+
+# Vantage
+git clone --depth=1 --single-branch https://github.com/anothaDev/luci-theme-vantage.git package/vantage
+sh "$GITHUB_WORKSPACE/files/scripts/custom-vantage.sh" package/vantage/luci-theme-vantage
+rm -rf "$GITHUB_WORKSPACE/files/scripts"

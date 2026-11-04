@@ -92,12 +92,24 @@ jobs:
         echo "After clone:"
         df -hT
 
-    - name: Cache
-      uses: klever1988/cachewrtbuild@main
+    - name: Restore build cache
+      id: build-cache
+      if: env.CLEAN_CACHE != 'true'
+      uses: actions/cache/restore@main
       with:
-        ccache: 'true'
-        prefix: ${{ github.workspace }}/openwrt
-        clean: ${{ env.CLEAN_CACHE }}
+        path: |
+          openwrt/staging_dir/host*
+          openwrt/staging_dir/tool*
+          openwrt/.ccache
+          openwrt/tmp/go-build
+          openwrt/build_dir/hostpkg
+        key: openwrt-${{ runner.os }}-${{ runner.arch }}-${{ env.REPO_TAG }}_${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          openwrt-${{ runner.os }}-${{ runner.arch }}-${{ env.REPO_TAG }}_
+
+    - name: Skip cached toolchain
+      if: steps.build-cache.outputs.cache-matched-key != ''
+      run: sed -i 's/ [$](tool.*\/stamp-compile)//; s/ [$](tool.*\/stamp-install)//;' openwrt/Makefile
 
     - name: Load custom feeds
       run: |
@@ -165,6 +177,17 @@ jobs:
           exit 1
         fi
         echo "FIRMWARE=$PWD" >> "$GITHUB_ENV"
+
+    - name: Save build cache
+      uses: actions/cache/save@main
+      with:
+        path: |
+          openwrt/staging_dir/host*
+          openwrt/staging_dir/tool*
+          openwrt/.ccache
+          openwrt/tmp/go-build
+          openwrt/build_dir/hostpkg
+        key: openwrt-${{ runner.os }}-${{ runner.arch }}-${{ env.REPO_TAG }}_${{ github.run_id }}-${{ github.run_attempt }}
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
