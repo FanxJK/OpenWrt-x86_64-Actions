@@ -18,7 +18,12 @@ curl https://raw.githubusercontent.com/immortalwrt/immortalwrt/openwrt-25.12/fee
 echo 'src-git-full fanx https://github.com/FanxJK/openwrt-packages' >> feeds.conf.default
 
 # luci-app-easytier
-git clone --depth=1 --single-branch https://github.com/EasyTier/luci-app-easytier.git package/luci-app-easytier
+EASYTIER_TAG=$(curl -fsSL \
+  -H "Authorization: Bearer $GH_TOKEN" \
+  https://api.github.com/repos/EasyTier/luci-app-easytier/releases/latest |
+  python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')
+[ -n "$EASYTIER_TAG" ] || { echo "Unable to resolve the latest EasyTier release tag."; exit 1; }
+git clone --depth=1 --single-branch --branch "$EASYTIER_TAG" https://github.com/EasyTier/luci-app-easytier.git package/luci-app-easytier
 
 # luci-app-netspeedtest
 git clone --depth=1 --single-branch https://github.com/muink/luci-app-netspeedtest.git package/luci-app-netspeedtest

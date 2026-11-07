@@ -112,6 +112,8 @@ jobs:
       run: sed -i 's/ [$](tool.*\/stamp-compile)//; s/ [$](tool.*\/stamp-install)//;' openwrt/Makefile
 
     - name: Load custom feeds
+      env:
+        GH_TOKEN: ${{ secrets.MY_SECRETS_TOKEN }}
       run: |
         cd openwrt
         "$GITHUB_WORKSPACE/custom-feeds.sh"
