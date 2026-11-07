@@ -15,8 +15,8 @@ done
 if [ ! -w "$d" ] || [ ! -w "$a" ]; then
     fail 'Theme source directories are not writable.'
 fi
-grep -Fq '<span class="vt-brand-word">' "$h" || fail 'Unexpected header.ut structure; no files changed.'
-grep -Fq '<h1 class="vt-login-title">' "$l" || fail 'Unexpected sysauth.ut structure; no files changed.'
+grep -Fq 'class="vt-brand-tile"' "$h" || fail 'Unexpected header.ut structure; no files changed.'
+grep -Fq 'class="vt-brand-tile"' "$l" || fail 'Unexpected sysauth.ut structure; no files changed.'
 for token in accent accent-hover accent-ink accent-text accent-soft accent-line focus v-chart-1; do
     grep -Fq -- "--$token:" "$c" || fail "Missing theme variable --$token; no files changed."
 done
@@ -33,7 +33,7 @@ trap 'exit 143' TERM
 
 body='<rect x="1" y="1" width="30" height="30" rx="7" class="vt-brand-tile"/><path d="M9.2 16.2a7.6 7.6 0 1 0 13.6 0" class="vt-iw-ring"/><path d="M7.5 10.5q8.5-7 17 0M10.5 13.8q5.5-4.8 11 0M13.5 17q2.5-2.2 5 0" class="vt-iw-waves"/><circle cx="16" cy="20.8" r="1.35" class="vt-brand-dot"/>'
 
-# Update header and login branding.
+# Update header and login logos.
 for page in header sysauth; do
     awk -v body="$body" -v page="$page" '
         function mark(size, cls) {
@@ -46,16 +46,12 @@ for page in header sysauth; do
                 cls = page == "sysauth" ? " class=\"vt-login-mark\"" : ""
                 sub(/<svg .*<\/svg>/, mark(size, cls))
             }
-            if (index($0, "class=\"vt-brand-word\"")) sub(/>Vantage<\/span>/, ">ImmortalWrt</span>")
-            if (index($0, "class=\"vt-login-title\"")) sub(/>Vantage<\/h1>/, ">ImmortalWrt</h1>")
             print
             if (small && index($0, "</span>")) small = 0
         }
     ' "$d/$page.ut" > "$work/$page.ut"
 done
 
-grep -Fq '<span class="vt-brand-word">ImmortalWrt</span>' "$work/header.ut" || fail 'Header name replacement failed; no files changed.'
-grep -Fq '<h1 class="vt-login-title">ImmortalWrt</h1>' "$work/sysauth.ut" || fail 'Login title replacement failed; no files changed.'
 [ "$(grep -Fc 'data-iw-logo="1"' "$work/header.ut")" = 2 ] || fail 'Unexpected header logo structure; no files changed.'
 [ "$(grep -Fc 'data-iw-logo="1"' "$work/sysauth.ut")" = 1 ] || fail 'Unexpected login logo structure; no files changed.'
 
@@ -139,9 +135,7 @@ install_file "$work/vantage.css" "$c"
 install_file "$work/header.ut" "$h"
 install_file "$work/sysauth.ut" "$l"
 
-grep -Fq '<span class="vt-brand-word">ImmortalWrt</span>' "$h"
-grep -Fq '<h1 class="vt-login-title">ImmortalWrt</h1>' "$l"
 grep -Fq -- '--accent: #2563eb;' "$c"
 grep -Fq -- '--accent: #60a5fa;' "$c"
 [ -s "$a/logo.svg" ]
-printf '%s\n' 'Vantage source customized: ImmortalWrt names, inline SVG, original logo.svg, blue palette.'
+printf '%s\n' 'Vantage source customized: ImmortalWrt icons, inline SVG, original logo.svg, blue palette.'
