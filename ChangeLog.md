@@ -1,3 +1,6 @@
+# 2026-11-16
+- 新增 `luci-app-tailscale-community`
+
 # 2026-11-04
 - 将 `Argon` 更换为 `Vantage` 主题
 
